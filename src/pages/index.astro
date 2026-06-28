@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { InvestmentCalculator } from '../features/calculator/InvestmentCalculator';
+---
+
+<Layout title="Housing Investment Calculator">
+	<div class="py-12">
+		<header class="mb-12">
+			<h1 class="text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">Investment Calculator</h1>
+			<p class="text-lg text-gray-600">Simulate your mortgage payments and interest breakdown for your next housing investment.</p>
+		</header>
+		
+		<InvestmentCalculator client:load />
+	</div>
+</Layout>

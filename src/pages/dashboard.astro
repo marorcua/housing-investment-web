@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { DashboardApp } from '../features/dashboard/DashboardApp';
+---
+
+<Layout title="Dashboard - HousingInvest">
+	<div class="py-12">
+		<DashboardApp client:only="react" />
+	</div>
+</Layout>
