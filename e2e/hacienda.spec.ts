@@ -16,21 +16,19 @@ test.describe('Transaction flow (Hacienda)', () => {
     await page.getByRole('button', { name: 'Save Property' }).click();
     await expect(page.getByText('Hacienda Test Property')).toBeVisible({ timeout: 10000 });
 
-    // Add revenue
+    // Add revenue — wait for form heading to disappear (mutation completed, form closed)
     await page.getByRole('button', { name: 'Revenue' }).first().click();
     await page.getByRole('button', { name: 'Add Revenue' }).waitFor({ state: 'visible', timeout: 5000 });
     await page.getByLabel('Amount (€)').fill('1200');
     await page.getByRole('button', { name: 'Add Revenue' }).click();
-    await expect(page.getByRole('button', { name: 'Saving...' })).toBeVisible({ timeout: 5000 });
-    await expect(page.getByRole('button', { name: 'Saving...' })).not.toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Add revenue', { exact: true })).not.toBeVisible({ timeout: 10000 });
 
-    // Add expense
+    // Add expense — wait for form heading to disappear
     await page.getByRole('button', { name: 'Expense' }).first().click();
     await page.getByRole('button', { name: 'Add Expense' }).waitFor({ state: 'visible', timeout: 5000 });
     await page.getByLabel('Amount (€)').fill('300');
     await page.getByRole('button', { name: 'Add Expense' }).click();
-    await expect(page.getByRole('button', { name: 'Saving...' })).toBeVisible({ timeout: 5000 });
-    await expect(page.getByRole('button', { name: 'Saving...' })).not.toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Add expense', { exact: true })).not.toBeVisible({ timeout: 10000 });
 
     // Open cashflow calendar and wait for June data to appear
     await page.getByRole('button', { name: 'Cashflow' }).first().click();
