@@ -18,24 +18,28 @@ test.describe('Transaction flow (Hacienda)', () => {
 
     // Add revenue
     await page.getByRole('button', { name: 'Revenue' }).first().click();
+    await page.getByRole('button', { name: 'Add Revenue' }).waitFor({ state: 'visible', timeout: 5000 });
     await page.getByLabel('Amount (€)').fill('1200');
     await page.getByRole('button', { name: 'Add Revenue' }).click();
+    await expect(page.getByRole('button', { name: 'Saving...' })).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole('button', { name: 'Saving...' })).not.toBeVisible({ timeout: 10000 });
 
     // Add expense
     await page.getByRole('button', { name: 'Expense' }).first().click();
+    await page.getByRole('button', { name: 'Add Expense' }).waitFor({ state: 'visible', timeout: 5000 });
     await page.getByLabel('Amount (€)').fill('300');
     await page.getByRole('button', { name: 'Add Expense' }).click();
+    await expect(page.getByRole('button', { name: 'Saving...' })).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole('button', { name: 'Saving...' })).not.toBeVisible({ timeout: 10000 });
 
-    // Open cashflow calendar
+    // Open cashflow calendar and wait for June data to appear
     await page.getByRole('button', { name: 'Cashflow' }).first().click();
     await expect(page.getByText(/Annual Cashflow/)).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText('Total Revenue').first()).toBeVisible();
-    await expect(page.getByText('Total Expenses').first()).toBeVisible();
-    await expect(page.getByText('Net Cashflow').first()).toBeVisible();
+    const junRow = page.locator('tr').filter({ hasText: 'Jun' }).first();
+    await expect(junRow.locator('td').nth(1)).not.toHaveText('\u2014', { timeout: 10000 });
 
     // Expand the current month row
-    const monthRow = page.locator('tr').filter({ hasText: 'Jun' }).first();
-    await monthRow.click();
+    await junRow.click();
 
     // Verify expanded entries appear
     await expect(page.getByText('Revenue entries')).toBeVisible({ timeout: 5000 });
