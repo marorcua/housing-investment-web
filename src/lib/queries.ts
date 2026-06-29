@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type QueryKey } from '@tanstack/react-query';
 import { api, isAuthenticated } from './api-client';
-import type { Property, Transaction, Tenant, Loan, RecurringExpense, Summary, GlobalData, MonthData } from './types';
+import type { Property, Transaction, Tenant, RentIncrease, Loan, RecurringExpense, Summary, GlobalData, MonthData } from './types';
 import { calcMonthlyPayment } from './loan';
 
 // --- Query keys ---
@@ -13,6 +13,7 @@ export const keys = {
   recurringExpenses: (id: number) => ['recurring-expenses', id] as const,
   revenues: (id: number) => ['revenues', id] as const,
   expenses: (id: number) => ['expenses', id] as const,
+  rentIncreases: (id: number) => ['rent-increases', id] as const,
 };
 
 export interface DashboardData {
@@ -107,6 +108,18 @@ function parseLocalDate(dateStr: string): Date {
   return new Date(y, m - 1, d);
 }
 
+function computeEscalatedRent(baseRent: number, startDate: string, targetYear: number, increases: RentIncrease[]): number {
+  const startYear = new Date(startDate).getFullYear();
+  const yearsSinceStart = targetYear - startYear;
+  let multiplier = 1;
+  for (const inc of increases) {
+    if (inc.applied && inc.yearOffset <= yearsSinceStart) {
+      multiplier *= (1 + inc.percentage / 100);
+    }
+  }
+  return baseRent * multiplier;
+}
+
 function getTenantRevenueForMonth(tenant: Tenant, year: number, month: number): number {
   const totalDays = new Date(year, month, 0).getDate();
   const monthStart = new Date(year, month - 1, 1);
@@ -117,7 +130,8 @@ function getTenantRevenueForMonth(tenant: Tenant, year: number, month: number): 
   const overlapEnd = contractEnd && contractEnd < monthEnd ? contractEnd : monthEnd;
   if (overlapStart > overlapEnd) return 0;
   const activeDays = overlapEnd.getDate() - overlapStart.getDate() + 1;
-  return (tenant.monthlyRent / totalDays) * activeDays;
+  const escalated = computeEscalatedRent(tenant.monthlyRent, tenant.startDate, year, tenant.rentIncreases || []);
+  return (escalated / totalDays) * activeDays;
 }
 
 function getLoanPaymentForMonth(loan: Loan, year: number, month: number): number | null {
@@ -217,7 +231,7 @@ export function useActiveTenant(propertyId: number) {
 }
 
 // --- Mutation hooks ---
-function invalidateAll(qc: ReturnType<typeof useQueryClient>, keys: string[][]) {
+function invalidateAll(qc: ReturnType<typeof useQueryClient>, keys: QueryKey[]) {
   keys.forEach(k => qc.invalidateQueries({ queryKey: k }));
 }
 
@@ -258,6 +272,44 @@ export function useDeleteTenant() {
   return useMutation({
     mutationFn: (id: number) => api.tenants.delete(id),
     onSuccess: () => invalidateAll(qc, [['tenants'], ['dashboard'], ['cashflow'], ['hacienda-summary'], ['hacienda-global']]),
+  });
+}
+
+// --- Rent Increase hooks ---
+export function useRentIncreases(tenantId: number) {
+  return useQuery({
+    queryKey: keys.rentIncreases(tenantId),
+    queryFn: () => api.tenants.increases.list(tenantId),
+  });
+}
+
+export function useCreateRentIncrease() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ tenantId, data }: { tenantId: number; data: { yearOffset: number; percentage: number } }) =>
+      api.tenants.increases.create(tenantId, data),
+    onSuccess: (_data, variables) =>
+      invalidateAll(qc, [['tenants'], keys.rentIncreases(variables.tenantId)]),
+  });
+}
+
+export function useUpdateRentIncrease() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ tenantId, increaseId, data }: { tenantId: number; increaseId: number; data: Partial<RentIncrease> }) =>
+      api.tenants.increases.update(tenantId, increaseId, data),
+    onSuccess: (_data, variables) =>
+      invalidateAll(qc, [['tenants'], keys.rentIncreases(variables.tenantId)]),
+  });
+}
+
+export function useDeleteRentIncrease() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ tenantId, increaseId }: { tenantId: number; increaseId: number }) =>
+      api.tenants.increases.delete(tenantId, increaseId),
+    onSuccess: (_data, variables) =>
+      invalidateAll(qc, [['tenants'], keys.rentIncreases(variables.tenantId)]),
   });
 }
 

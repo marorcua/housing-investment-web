@@ -1,4 +1,4 @@
-import type { Property, Transaction, Tenant, Loan, RecurringExpense, Summary, GlobalData } from './types';
+import type { Property, Transaction, Tenant, RentIncrease, Loan, RecurringExpense, Summary, GlobalData } from './types';
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
 
@@ -90,6 +90,16 @@ export const api = {
       request<Tenant>(`/tenants/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
     delete: (id: number) =>
       request<{ message: string }>(`/tenants/${id}`, { method: 'DELETE' }),
+    increases: {
+      list: (tenantId: number) =>
+        request<RentIncrease[]>(`/tenants/${tenantId}/increases`),
+      create: (tenantId: number, data: { yearOffset: number; percentage: number; applied?: boolean }) =>
+        request<RentIncrease>(`/tenants/${tenantId}/increases`, { method: 'POST', body: JSON.stringify(data) }),
+      update: (tenantId: number, increaseId: number, data: Partial<RentIncrease>) =>
+        request<RentIncrease>(`/tenants/${tenantId}/increases/${increaseId}`, { method: 'PATCH', body: JSON.stringify(data) }),
+      delete: (tenantId: number, increaseId: number) =>
+        request<{ message: string }>(`/tenants/${tenantId}/increases/${increaseId}`, { method: 'DELETE' }),
+    },
   },
 
   loans: {
