@@ -100,29 +100,29 @@ export const RecurringExpenseManagement: React.FC<Props> = ({ propertyId, onClos
                     <div className="space-y-3">
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Name</label>
-                          <input className={inputCls} value={editDraft.name || ''} onChange={e => setEditDraft(d => ({ ...d, name: e.target.value }))} />
+                          <label htmlFor="edit-re-name" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Name</label>
+                          <input id="edit-re-name" className={inputCls} value={editDraft.name || ''} onChange={e => setEditDraft(d => ({ ...d, name: e.target.value }))} />
                         </div>
                         <div>
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Type</label>
-                          <select className={inputCls} value={editDraft.type || 'other'} onChange={e => setEditDraft(d => ({ ...d, type: e.target.value as any }))}>
+                          <label htmlFor="edit-re-type" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Type</label>
+                          <select id="edit-re-type" className={inputCls} value={editDraft.type || 'other'} onChange={e => setEditDraft(d => ({ ...d, type: e.target.value as any }))}>
                             {Object.entries(expenseTypeLabels).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                           </select>
                         </div>
                         <div>
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Amount (€)</label>
-                          <input type="number" className={inputCls} value={editDraft.amount || ''} onChange={e => setEditDraft(d => ({ ...d, amount: Number(e.target.value) }))} />
+                          <label htmlFor="edit-re-amount" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Amount (€)</label>
+                          <input id="edit-re-amount" type="number" className={inputCls} value={editDraft.amount || ''} onChange={e => setEditDraft(d => ({ ...d, amount: Number(e.target.value) }))} />
                         </div>
                         <div>
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Frequency</label>
-                          <select className={inputCls} value={editDraft.frequency || 'monthly'} onChange={e => setEditDraft(d => ({ ...d, frequency: e.target.value as 'monthly' | 'annual' }))}>
+                          <label htmlFor="edit-re-freq" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Frequency</label>
+                          <select id="edit-re-freq" className={inputCls} value={editDraft.frequency || 'monthly'} onChange={e => setEditDraft(d => ({ ...d, frequency: e.target.value as 'monthly' | 'annual' }))}>
                             <option value="monthly">Monthly</option>
                             <option value="annual">Annual</option>
                           </select>
                         </div>
                         <div className="col-span-2">
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
-                          <input type="date" className={inputCls} value={editDraft.startDate || ''} onChange={e => setEditDraft(d => ({ ...d, startDate: e.target.value }))} />
+                          <label htmlFor="edit-re-start" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
+                          <input id="edit-re-start" type="date" className={inputCls} value={editDraft.startDate || ''} onChange={e => setEditDraft(d => ({ ...d, startDate: e.target.value }))} />
                         </div>
                       </div>
                       <div className="flex gap-2">
@@ -170,29 +170,29 @@ export const RecurringExpenseManagement: React.FC<Props> = ({ propertyId, onClos
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Name</label>
-                  <input type="text" required value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Mapfre Seguro, IBI 2026" className={inputCls} />
+                  <label htmlFor="add-re-name" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Name</label>
+                  <input id="add-re-name" type="text" required value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Mapfre Seguro, IBI 2026" className={inputCls} />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Type</label>
-                  <select value={type} onChange={e => setType(e.target.value)} className={inputCls}>
+                  <label htmlFor="add-re-type" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Type</label>
+                  <select id="add-re-type" value={type} onChange={e => setType(e.target.value)} className={inputCls}>
                     {Object.entries(expenseTypeLabels).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Amount (€)</label>
-                  <input type="number" required value={amount || ''} onChange={e => setAmount(Number(e.target.value))} placeholder="e.g. 50" className={inputCls} />
+                  <label htmlFor="add-re-amount" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Amount (€)</label>
+                  <input id="add-re-amount" type="number" required value={amount || ''} onChange={e => setAmount(Number(e.target.value))} placeholder="e.g. 50" className={inputCls} />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Frequency</label>
-                  <select value={frequency} onChange={e => setFrequency(e.target.value as 'monthly' | 'annual')} className={inputCls}>
+                  <label htmlFor="add-re-freq" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Frequency</label>
+                  <select id="add-re-freq" value={frequency} onChange={e => setFrequency(e.target.value as 'monthly' | 'annual')} className={inputCls}>
                     <option value="monthly">Monthly</option>
                     <option value="annual">Annual</option>
                   </select>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
-                  <input type="date" required value={startDate} onChange={e => setStartDate(e.target.value)} className={inputCls} />
+                  <label htmlFor="add-re-start" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
+                  <input id="add-re-start" type="date" required value={startDate} onChange={e => setStartDate(e.target.value)} className={inputCls} />
                 </div>
               </div>
               <button type="submit" disabled={createExpense.isPending} className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 rounded text-xs transition disabled:opacity-50">

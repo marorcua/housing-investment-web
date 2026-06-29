@@ -32,8 +32,9 @@ export const LoginPage: React.FC<Props> = ({ onLoggedIn }) => {
         <p className="text-gray-500 text-sm mb-6">Enter your password to access the dashboard.</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label htmlFor="login-password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <input
+              id="login-password"
               type="password"
               required
               value={password}

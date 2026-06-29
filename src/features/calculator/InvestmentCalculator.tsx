@@ -47,8 +47,9 @@ export const InvestmentCalculator: React.FC = () => {
         
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">House Price (€)</label>
-            <input 
+            <label htmlFor="calc-house-price" className="block text-sm font-medium text-gray-700 mb-1">House Price (€)</label>
+            <input
+              id="calc-house-price"
               type="number" 
               value={housePrice} 
               onChange={(e) => setHousePrice(Number(e.target.value))}
@@ -57,8 +58,9 @@ export const InvestmentCalculator: React.FC = () => {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Loan Percentage (%)</label>
-            <input 
+            <label htmlFor="calc-loan-pct" className="block text-sm font-medium text-gray-700 mb-1">Loan Percentage (%)</label>
+            <input
+              id="calc-loan-pct"
               type="number" 
               value={loanPercentage} 
               onChange={(e) => setLoanPercentage(Number(e.target.value))}
@@ -67,8 +69,9 @@ export const InvestmentCalculator: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Interest Rate (%)</label>
-            <input 
+            <label htmlFor="calc-interest" className="block text-sm font-medium text-gray-700 mb-1">Interest Rate (%)</label>
+            <input
+              id="calc-interest"
               type="number" 
               step="0.1"
               value={interestRate} 
@@ -78,8 +81,9 @@ export const InvestmentCalculator: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Loan Term (Years)</label>
-            <input 
+            <label htmlFor="calc-term" className="block text-sm font-medium text-gray-700 mb-1">Loan Term (Years)</label>
+            <input
+              id="calc-term"
               type="number" 
               value={years} 
               onChange={(e) => setYears(Number(e.target.value))}

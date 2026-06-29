@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from './api-client';
+import { api, isAuthenticated } from './api-client';
 import type { Property, Transaction, Tenant, Loan, RecurringExpense, Summary, GlobalData, MonthData } from './types';
 import { calcMonthlyPayment } from './loan';
 
@@ -24,6 +24,7 @@ export interface DashboardData {
 export function useDashboardData() {
   return useQuery({
     queryKey: ['dashboard'],
+    enabled: isAuthenticated(),
     queryFn: async () => {
       const properties = await api.properties.list();
       const summaryResults = await Promise.allSettled(

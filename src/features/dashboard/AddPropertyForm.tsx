@@ -29,24 +29,24 @@ export const AddPropertyForm: React.FC<{ onAdded: () => void }> = ({ onAdded }) 
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Property Name</label>
-          <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full p-2 border border-gray-300 rounded-md" placeholder="e.g. My First Apartment" />
+          <label htmlFor="prop-name" className="block text-xs font-bold text-gray-500 uppercase mb-1">Property Name</label>
+          <input id="prop-name" type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full p-2 border border-gray-300 rounded-md" placeholder="e.g. My First Apartment" />
         </div>
         <div>
-          <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Address</label>
-          <input type="text" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full p-2 border border-gray-300 rounded-md" />
+          <label htmlFor="prop-address" className="block text-xs font-bold text-gray-500 uppercase mb-1">Address</label>
+          <input id="prop-address" type="text" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full p-2 border border-gray-300 rounded-md" />
         </div>
         <div>
-          <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Purchase Price (€)</label>
-          <input type="number" required value={formData.purchasePrice} onChange={e => setFormData({...formData, purchasePrice: Number(e.target.value)})} className="w-full p-2 border border-gray-300 rounded-md" />
+          <label htmlFor="prop-price" className="block text-xs font-bold text-gray-500 uppercase mb-1">Purchase Price (€)</label>
+          <input id="prop-price" type="number" required value={formData.purchasePrice} onChange={e => setFormData({...formData, purchasePrice: Number(e.target.value)})} className="w-full p-2 border border-gray-300 rounded-md" />
         </div>
         <div>
-          <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Purchase Date</label>
-          <input type="date" required value={formData.purchaseDate} onChange={e => setFormData({...formData, purchaseDate: e.target.value})} className="w-full p-2 border border-gray-300 rounded-md" />
+          <label htmlFor="prop-date" className="block text-xs font-bold text-gray-500 uppercase mb-1">Purchase Date</label>
+          <input id="prop-date" type="date" required value={formData.purchaseDate} onChange={e => setFormData({...formData, purchaseDate: e.target.value})} className="w-full p-2 border border-gray-300 rounded-md" />
         </div>
         <div>
-          <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Cadastral Value (€)</label>
-          <input type="number" value={formData.cadastralValue} onChange={e => setFormData({...formData, cadastralValue: Number(e.target.value)})} className="w-full p-2 border border-gray-300 rounded-md" />
+          <label htmlFor="prop-cadastral" className="block text-xs font-bold text-gray-500 uppercase mb-1">Cadastral Value (€)</label>
+          <input id="prop-cadastral" type="number" value={formData.cadastralValue} onChange={e => setFormData({...formData, cadastralValue: Number(e.target.value)})} className="w-full p-2 border border-gray-300 rounded-md" />
         </div>
       </div>
       <div className="flex justify-end pt-4">

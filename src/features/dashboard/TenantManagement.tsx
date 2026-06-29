@@ -87,24 +87,24 @@ export const TenantManagement: React.FC<Props> = ({ propertyId, onClose }) => {
         )}
         {isEditing ? (
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Name</label>
-                <input className={inputCls} value={editDraft.name || ''} onChange={e => setEditDraft(d => ({ ...d, name: e.target.value }))} />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label htmlFor="edit-tenant-name" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Name</label>
+                  <input id="edit-tenant-name" className={inputCls} value={editDraft.name || ''} onChange={e => setEditDraft(d => ({ ...d, name: e.target.value }))} />
+                </div>
+                <div>
+                  <label htmlFor="edit-tenant-rent" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Monthly Rent (€)</label>
+                  <input id="edit-tenant-rent" type="number" className={inputCls} value={editDraft.monthlyRent || ''} onChange={e => setEditDraft(d => ({ ...d, monthlyRent: Number(e.target.value) }))} />
+                </div>
+                <div>
+                  <label htmlFor="edit-tenant-start" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
+                  <input id="edit-tenant-start" type="date" className={inputCls} value={editDraft.startDate || ''} onChange={e => setEditDraft(d => ({ ...d, startDate: e.target.value }))} />
+                </div>
+                <div>
+                  <label htmlFor="edit-tenant-end" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">End Date</label>
+                  <input id="edit-tenant-end" type="date" className={inputCls} value={editDraft.endDate || ''} onChange={e => setEditDraft(d => ({ ...d, endDate: e.target.value }))} />
+                </div>
               </div>
-              <div>
-                <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Monthly Rent (€)</label>
-                <input type="number" className={inputCls} value={editDraft.monthlyRent || ''} onChange={e => setEditDraft(d => ({ ...d, monthlyRent: Number(e.target.value) }))} />
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
-                <input type="date" className={inputCls} value={editDraft.startDate || ''} onChange={e => setEditDraft(d => ({ ...d, startDate: e.target.value }))} />
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">End Date</label>
-                <input type="date" className={inputCls} value={editDraft.endDate || ''} onChange={e => setEditDraft(d => ({ ...d, endDate: e.target.value }))} />
-              </div>
-            </div>
             <div className="flex gap-2 pt-1">
               <button onClick={() => saveEdit(tenant.id)} className="flex items-center gap-1 px-3 py-1 rounded bg-green-600 hover:bg-green-700 text-white font-bold text-xs transition">
                 <Check size={12} /> Save
@@ -178,20 +178,20 @@ export const TenantManagement: React.FC<Props> = ({ propertyId, onClose }) => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tenant Name</label>
-                  <input type="text" required value={newName} onChange={e => setNewName(e.target.value)} placeholder="e.g. John Doe" className={inputCls} />
+                  <label htmlFor="add-tenant-name" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tenant Name</label>
+                  <input id="add-tenant-name" type="text" required value={newName} onChange={e => setNewName(e.target.value)} placeholder="e.g. John Doe" className={inputCls} />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Monthly Rent (€)</label>
-                  <input type="number" required value={newMonthlyRent || ''} onChange={e => setNewMonthlyRent(Number(e.target.value))} placeholder="e.g. 750" className={inputCls} />
+                  <label htmlFor="add-tenant-rent" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Monthly Rent (€)</label>
+                  <input id="add-tenant-rent" type="number" required value={newMonthlyRent || ''} onChange={e => setNewMonthlyRent(Number(e.target.value))} placeholder="e.g. 750" className={inputCls} />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
-                  <input type="date" required value={newStartDate} onChange={e => setNewStartDate(e.target.value)} className={inputCls} />
+                  <label htmlFor="add-tenant-start" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
+                  <input id="add-tenant-start" type="date" required value={newStartDate} onChange={e => setNewStartDate(e.target.value)} className={inputCls} />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">End Date (optional)</label>
-                  <input type="date" value={newEndDate} onChange={e => setNewEndDate(e.target.value)} className={inputCls} />
+                  <label htmlFor="add-tenant-end" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">End Date (optional)</label>
+                  <input id="add-tenant-end" type="date" value={newEndDate} onChange={e => setNewEndDate(e.target.value)} className={inputCls} />
                 </div>
               </div>
               <button type="submit" disabled={createTenant.isPending} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded text-xs transition disabled:opacity-50">

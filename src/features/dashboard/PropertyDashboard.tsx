@@ -15,6 +15,7 @@ import { isAuthenticated, logout } from '../../lib/api-client';
 const inputCls = 'p-1.5 text-xs border border-blue-300 rounded bg-white focus:outline-none focus:ring-1 focus:ring-blue-400 w-full';
 
 export const PropertyDashboard: React.FC = () => {
+  const [authTick, setAuthTick] = useState(0);
   const { data: dashboard, isLoading } = useDashboardData();
   const updateProperty = useUpdateProperty();
 
@@ -52,7 +53,7 @@ export const PropertyDashboard: React.FC = () => {
   };
 
   if (!isAuthenticated()) {
-    return <LoginPage onLoggedIn={() => {}} />;
+    return <LoginPage onLoggedIn={() => setAuthTick(t => t + 1)} />;
   }
 
   if (isLoading) {
@@ -75,7 +76,7 @@ export const PropertyDashboard: React.FC = () => {
           >
             {showAddForm ? <><X size={18} /> Cancel</> : <><Plus size={18} /> Add Property</>}
           </button>
-          <button onClick={logout} className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 transition font-medium">
+          <button onClick={() => { logout(); setAuthTick(t => t + 1); }} className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 transition font-medium">
             <LogOut size={18} /> Logout
           </button>
         </div>
@@ -107,33 +108,33 @@ export const PropertyDashboard: React.FC = () => {
               <div key={property.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
                   {isEditingProp ? (
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        <div>
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Property Name</label>
-                          <input className={inputCls} value={editPropertyDraft.name || ''} onChange={e => setEditPropertyDraft(d => ({ ...d, name: e.target.value }))} />
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                          <div>
+                            <label htmlFor="edit-prop-name" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Property Name</label>
+                            <input id="edit-prop-name" className={inputCls} value={editPropertyDraft.name || ''} onChange={e => setEditPropertyDraft(d => ({ ...d, name: e.target.value }))} />
+                          </div>
+                          <div>
+                            <label htmlFor="edit-prop-address" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Address</label>
+                            <input id="edit-prop-address" className={inputCls} value={editPropertyDraft.address || ''} onChange={e => setEditPropertyDraft(d => ({ ...d, address: e.target.value }))} />
+                          </div>
+                          <div>
+                            <label htmlFor="edit-prop-price" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Purchase Price (€)</label>
+                            <input id="edit-prop-price" type="number" className={inputCls} value={editPropertyDraft.purchasePrice || ''} onChange={e => setEditPropertyDraft(d => ({ ...d, purchasePrice: Number(e.target.value) }))} />
+                          </div>
+                          <div>
+                            <label htmlFor="edit-prop-date" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Purchase Date</label>
+                            <input id="edit-prop-date" type="date" className={inputCls} value={editPropertyDraft.purchaseDate || ''} onChange={e => setEditPropertyDraft(d => ({ ...d, purchaseDate: e.target.value }))} />
+                          </div>
+                          <div>
+                            <label htmlFor="edit-prop-cadastral" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Cadastral Value (€)</label>
+                            <input id="edit-prop-cadastral" type="number" className={inputCls} value={editPropertyDraft.cadastralValue ?? ''} onChange={e => setEditPropertyDraft(d => ({ ...d, cadastralValue: Number(e.target.value) }))} />
+                          </div>
+                          <div>
+                            <label htmlFor="edit-prop-building" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Building Value (€)</label>
+                            <input id="edit-prop-building" type="number" className={inputCls} value={editPropertyDraft.buildingValue ?? ''} onChange={e => setEditPropertyDraft(d => ({ ...d, buildingValue: Number(e.target.value) }))} />
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Address</label>
-                          <input className={inputCls} value={editPropertyDraft.address || ''} onChange={e => setEditPropertyDraft(d => ({ ...d, address: e.target.value }))} />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Purchase Price (€)</label>
-                          <input type="number" className={inputCls} value={editPropertyDraft.purchasePrice || ''} onChange={e => setEditPropertyDraft(d => ({ ...d, purchasePrice: Number(e.target.value) }))} />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Purchase Date</label>
-                          <input type="date" className={inputCls} value={editPropertyDraft.purchaseDate || ''} onChange={e => setEditPropertyDraft(d => ({ ...d, purchaseDate: e.target.value }))} />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Cadastral Value (€)</label>
-                          <input type="number" className={inputCls} value={editPropertyDraft.cadastralValue ?? ''} onChange={e => setEditPropertyDraft(d => ({ ...d, cadastralValue: Number(e.target.value) }))} />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Building Value (€)</label>
-                          <input type="number" className={inputCls} value={editPropertyDraft.buildingValue ?? ''} onChange={e => setEditPropertyDraft(d => ({ ...d, buildingValue: Number(e.target.value) }))} />
-                        </div>
-                      </div>
                       <div className="flex gap-2">
                         <button onClick={() => savePropertyEdit(property.id)} className="flex items-center gap-1 px-3 py-1.5 rounded bg-green-600 hover:bg-green-700 text-white font-bold text-xs transition">
                           <Check size={13} /> Save Changes

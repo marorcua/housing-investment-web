@@ -22,18 +22,21 @@ PUBLIC_API_URL=http://localhost:3000 npm run dev
 | Command | Description |
 |---|---|
 | `npm run dev` | Start dev server |
-| `npm run build` | Build for production |
+| `npm run build` | Build for production (Astro + TypeScript) |
 | `npm run preview` | Preview production build |
+| `npm test` | Placeholder (reserved for future unit tests) |
+| `npm run test:e2e` | Run Playwright e2e tests |
 
 ## Features
 
 - **Global Overview** — dual-bar SVG chart comparing revenue vs expenses across all properties (annual/monthly toggle)
-- **Per-property cards** — purchase price, annual revenue, tax deductions, net yield, net cashflow
-- **Tenant management** — create/edit/terminate/delete leases with monthly rent
-- **Loan management** — register mortgages/loans with French amortization calculation
-- **Recurring expenses** — register insurance, IBI, community fees, etc.
-- **Cashflow calendar** — monthly breakdown with synthetic entries for tenant rent, loan payments, and recurring expenses; inline edit/delete for manual transactions
-- **Auth** — JWT login page, token stored in localStorage
+- **Per-property cards** — purchase price, annual revenue, tax deductions, net yield, net cashflow with detailed Hacienda & cashflow breakdown panels
+- **Tenant management** — create/edit/terminate/delete leases with monthly rent and lease history
+- **Loan management** — register mortgages/loans with French amortization calculation and automatic monthly payment projection
+- **Recurring expenses** — register insurance, IBI, community fees, etc. with monthly/annual frequency
+- **Cashflow calendar** — monthly breakdown with synthetic entries for tenant rent, loan payments, and recurring expenses; inline edit/delete for manual transactions; interactive SVG bar chart
+- **Investment calculator** — mortgage simulator with real-time amortization (principal/interest breakdown)
+- **Auth** — JWT login page, token stored in localStorage, protected routes
 
 ## Tech Stack
 

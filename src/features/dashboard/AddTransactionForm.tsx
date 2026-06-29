@@ -41,18 +41,18 @@ export const AddTransactionForm: React.FC<Props> = ({ propertyId, type, onAdded,
       {error && <p className="text-xs text-red-600">{error}</p>}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-[10px] font-bold text-gray-400 uppercase">Amount (€)</label>
-          <input type="number" required value={amount} onChange={e => setAmount(Number(e.target.value))} className="w-full p-1 text-sm border rounded" />
+          <label htmlFor="tx-amount" className="block text-[10px] font-bold text-gray-400 uppercase">Amount (€)</label>
+          <input id="tx-amount" type="number" required value={amount} onChange={e => setAmount(Number(e.target.value))} className="w-full p-1 text-sm border rounded" />
         </div>
         <div>
-          <label className="block text-[10px] font-bold text-gray-400 uppercase">Date</label>
-          <input type="date" required value={date} onChange={e => setDate(e.target.value)} className="w-full p-1 text-sm border rounded" />
+          <label htmlFor="tx-date" className="block text-[10px] font-bold text-gray-400 uppercase">Date</label>
+          <input id="tx-date" type="date" required value={date} onChange={e => setDate(e.target.value)} className="w-full p-1 text-sm border rounded" />
         </div>
       </div>
       {type === 'expense' && (
         <div>
-          <label className="block text-[10px] font-bold text-gray-400 uppercase">Type</label>
-          <select value={expenseType} onChange={e => setExpenseType(e.target.value)} className="w-full p-1 text-sm border rounded">
+          <label htmlFor="tx-type" className="block text-[10px] font-bold text-gray-400 uppercase">Type</label>
+          <select id="tx-type" value={expenseType} onChange={e => setExpenseType(e.target.value)} className="w-full p-1 text-sm border rounded">
             <option value="interest">Interest</option>
             <option value="tax">Tax (IBI, etc)</option>
             <option value="community">Community</option>
@@ -63,8 +63,8 @@ export const AddTransactionForm: React.FC<Props> = ({ propertyId, type, onAdded,
         </div>
       )}
       <div>
-        <label className="block text-[10px] font-bold text-gray-400 uppercase">Description</label>
-        <input type="text" value={description} onChange={e => setDescription(e.target.value)} className="w-full p-1 text-sm border rounded" />
+        <label htmlFor="tx-desc" className="block text-[10px] font-bold text-gray-400 uppercase">Description</label>
+        <input id="tx-desc" type="text" value={description} onChange={e => setDescription(e.target.value)} className="w-full p-1 text-sm border rounded" />
       </div>
       <button type="submit" disabled={mutation.isPending} className={`w-full py-2 rounded text-white text-sm font-bold ${type === 'revenue' ? 'bg-green-600' : 'bg-red-600'} disabled:opacity-50`}>
         {mutation.isPending ? 'Saving...' : `Add ${type === 'revenue' ? 'Revenue' : 'Expense'}`}

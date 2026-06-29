@@ -93,24 +93,24 @@ export const LoanManagement: React.FC<Props> = ({ propertyId, onClose }) => {
                     <div className="space-y-3">
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Name</label>
-                          <input className={inputCls} value={editDraft.name || ''} onChange={e => setEditDraft(d => ({ ...d, name: e.target.value }))} />
+                          <label htmlFor="edit-loan-name" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Name</label>
+                          <input id="edit-loan-name" className={inputCls} value={editDraft.name || ''} onChange={e => setEditDraft(d => ({ ...d, name: e.target.value }))} />
                         </div>
                         <div>
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Principal (€)</label>
-                          <input type="number" className={inputCls} value={editDraft.principal || ''} onChange={e => setEditDraft(d => ({ ...d, principal: Number(e.target.value) }))} />
+                          <label htmlFor="edit-loan-principal" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Principal (€)</label>
+                          <input id="edit-loan-principal" type="number" className={inputCls} value={editDraft.principal || ''} onChange={e => setEditDraft(d => ({ ...d, principal: Number(e.target.value) }))} />
                         </div>
                         <div>
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Interest Rate (%)</label>
-                          <input type="number" step="0.01" className={inputCls} value={editDraft.interestRate ?? ''} onChange={e => setEditDraft(d => ({ ...d, interestRate: Number(e.target.value) }))} />
+                          <label htmlFor="edit-loan-rate" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Interest Rate (%)</label>
+                          <input id="edit-loan-rate" type="number" step="0.01" className={inputCls} value={editDraft.interestRate ?? ''} onChange={e => setEditDraft(d => ({ ...d, interestRate: Number(e.target.value) }))} />
                         </div>
                         <div>
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Term (Years)</label>
-                          <input type="number" className={inputCls} value={editDraft.termYears || ''} onChange={e => setEditDraft(d => ({ ...d, termYears: Number(e.target.value) }))} />
+                          <label htmlFor="edit-loan-term" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Term (Years)</label>
+                          <input id="edit-loan-term" type="number" className={inputCls} value={editDraft.termYears || ''} onChange={e => setEditDraft(d => ({ ...d, termYears: Number(e.target.value) }))} />
                         </div>
                         <div className="col-span-2">
-                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
-                          <input type="date" className={inputCls} value={editDraft.startDate || ''} onChange={e => setEditDraft(d => ({ ...d, startDate: e.target.value }))} />
+                          <label htmlFor="edit-loan-start" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
+                          <input id="edit-loan-start" type="date" className={inputCls} value={editDraft.startDate || ''} onChange={e => setEditDraft(d => ({ ...d, startDate: e.target.value }))} />
                         </div>
                       </div>
                       <div className="flex gap-2">
@@ -158,24 +158,24 @@ export const LoanManagement: React.FC<Props> = ({ propertyId, onClose }) => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Loan Name</label>
-                  <input type="text" required value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Mortgage, Reform Loan" className={inputCls} />
+                  <label htmlFor="add-loan-name" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Loan Name</label>
+                  <input id="add-loan-name" type="text" required value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Mortgage, Reform Loan" className={inputCls} />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Principal (€)</label>
-                  <input type="number" required value={principal || ''} onChange={e => setPrincipal(Number(e.target.value))} placeholder="e.g. 150000" className={inputCls} />
+                  <label htmlFor="add-loan-principal" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Principal (€)</label>
+                  <input id="add-loan-principal" type="number" required value={principal || ''} onChange={e => setPrincipal(Number(e.target.value))} placeholder="e.g. 150000" className={inputCls} />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Interest Rate (%)</label>
-                  <input type="number" step="0.01" required value={interestRate || ''} onChange={e => setInterestRate(Number(e.target.value))} placeholder="e.g. 3.25" className={inputCls} />
+                  <label htmlFor="add-loan-rate" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Interest Rate (%)</label>
+                  <input id="add-loan-rate" type="number" step="0.01" required value={interestRate || ''} onChange={e => setInterestRate(Number(e.target.value))} placeholder="e.g. 3.25" className={inputCls} />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Term (Years)</label>
-                  <input type="number" required value={termYears || ''} onChange={e => setTermYears(Number(e.target.value))} placeholder="e.g. 30" className={inputCls} />
+                  <label htmlFor="add-loan-term" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Term (Years)</label>
+                  <input id="add-loan-term" type="number" required value={termYears || ''} onChange={e => setTermYears(Number(e.target.value))} placeholder="e.g. 30" className={inputCls} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
-                  <input type="date" required value={startDate} onChange={e => setStartDate(e.target.value)} className={inputCls} />
+                  <label htmlFor="add-loan-start" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
+                  <input id="add-loan-start" type="date" required value={startDate} onChange={e => setStartDate(e.target.value)} className={inputCls} />
                 </div>
               </div>
               <button type="submit" disabled={createLoan.isPending} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded text-xs transition disabled:opacity-50">
