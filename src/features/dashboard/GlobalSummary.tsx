@@ -11,7 +11,7 @@ export const GlobalSummary: React.FC = () => {
   const [year, setYear] = useState(currentYear);
   const [selectedPropId, setSelectedPropId] = useState<number | null>(null);
   const { data: properties } = useProperties();
-  const { data: rows, isLoading } = useGlobalSummary(
+  const { data: rows, isFetching } = useGlobalSummary(
     selectedPropId ? [selectedPropId] : (properties?.map(p => p.id) ?? null),
     year
   );
@@ -62,13 +62,18 @@ export const GlobalSummary: React.FC = () => {
         </div>
       </div>
 
-      {isLoading ? (
+      {!rows ? (
         <div className="text-center py-8 text-xs text-gray-500">
           <div className="h-4 w-48 bg-gray-200 rounded animate-pulse mx-auto mb-2" />
           <div className="h-3 w-36 bg-gray-200 rounded animate-pulse mx-auto" />
         </div>
-      ) : rows ? (
-        <div className="bg-white border border-gray-200 rounded-xl overflow-x-auto">
+      ) : (
+        <div className="bg-white border border-gray-200 rounded-xl overflow-x-auto relative">
+          {isFetching && (
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-amber-200 overflow-hidden">
+              <div className="h-full bg-amber-500 rounded-full animate-pulse" style={{ width: '40%' }} />
+            </div>
+          )}
           <table className="w-full text-xs">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
@@ -121,7 +126,7 @@ export const GlobalSummary: React.FC = () => {
             )}
           </table>
         </div>
-      ) : null}
+      )}
     </div>
   );
 };

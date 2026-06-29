@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMonthlySummary } from '../../lib/queries';
 import { formatEuros } from '../../lib/format';
-import { ChevronLeft, ChevronRight, FileSpreadsheet, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileSpreadsheet } from 'lucide-react';
 
 interface Props {
   propertyId: number;
@@ -11,7 +11,7 @@ interface Props {
 export const PropertySummary: React.FC<Props> = ({ propertyId, propertyName }) => {
   const currentYear = new Date().getFullYear();
   const [year, setYear] = useState(currentYear);
-  const { data: rows, isLoading } = useMonthlySummary(propertyId, year);
+  const { data: rows, isFetching } = useMonthlySummary(propertyId, year);
 
   const totals = rows ? rows.reduce((a, r) => ({
     earnings: a.earnings + r.earnings,
@@ -47,13 +47,18 @@ export const PropertySummary: React.FC<Props> = ({ propertyId, propertyName }) =
         </div>
       </div>
 
-      {isLoading ? (
+      {!rows ? (
         <div className="text-center py-8 text-xs text-gray-500">
           <div className="h-4 w-48 bg-gray-200 rounded animate-pulse mx-auto mb-2" />
           <div className="h-3 w-36 bg-gray-200 rounded animate-pulse mx-auto" />
         </div>
-      ) : rows ? (
-        <div className="bg-white border border-gray-200 rounded-xl overflow-x-auto">
+      ) : (
+        <div className="bg-white border border-gray-200 rounded-xl overflow-x-auto relative">
+          {isFetching && (
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-amber-200 overflow-hidden">
+              <div className="h-full bg-amber-500 rounded-full animate-pulse" style={{ width: '40%' }} />
+            </div>
+          )}
           <table className="w-full text-xs">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
@@ -106,7 +111,7 @@ export const PropertySummary: React.FC<Props> = ({ propertyId, propertyName }) =
             )}
           </table>
         </div>
-      ) : null}
+      )}
     </div>
   );
 };

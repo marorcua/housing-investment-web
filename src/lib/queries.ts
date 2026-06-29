@@ -233,6 +233,7 @@ export function useCashflowData(propertyId: number, year: number) {
 export function useMonthlySummary(propertyId: number, year: number) {
   return useQuery({
     queryKey: ['monthly-summary', propertyId, year],
+    placeholderData: (prev) => prev,
     queryFn: async () => {
       const [allRevenues, allExpenses, allTenants, allLoans, allRecurring] = await Promise.all([
         api.revenues.listByProperty(propertyId),
@@ -314,6 +315,7 @@ export function useMonthlySummary(propertyId: number, year: number) {
 export function useGlobalSummary(propertyIds: number[] | null, year: number) {
   return useQuery({
     queryKey: ['global-summary', propertyIds, year],
+    placeholderData: (prev) => prev,
     queryFn: async () => {
       const ids = propertyIds;
       if (!ids || ids.length === 0) {
