@@ -9,12 +9,50 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: web
+
+      - name: Checkout API
+        uses: actions/checkout@v4
+        with:
+          repository: marorcua/housing-investment-api
+          path: api
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'npm'
-      - run: npm ci
-      - run: npx tsc --noEmit
-      - run: npm run build
+          cache-dependency-path: |
+            web/package-lock.json
+            api/package-lock.json
+
+      - name: Install API dependencies
+        run: npm ci
+        working-directory: api
+
+      - name: Install web dependencies
+        run: npm ci
+        working-directory: web
+
+      - name: TypeScript check (web)
+        run: npx tsc --noEmit
+        working-directory: web
+
+      - name: Build web
+        run: npm run build
+        working-directory: web
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium
+        working-directory: web
+
+      - name: Run e2e tests
+        run: npx playwright test
+        working-directory: web
+        env:
+          API_DIR: ../api
