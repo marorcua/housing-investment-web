@@ -1,0 +1,11 @@
+#!/bin/bash
+set -euo pipefail
+
+API_DIR="${API_DIR:-../housing-investment-api}"
+if [ ! -d "$API_DIR" ]; then
+  echo "⚠  API project not found at $API_DIR, skipping e2e tests"
+  exit 0
+fi
+
+echo "→ pre-push: running e2e tests..."
+npm run test:e2e
