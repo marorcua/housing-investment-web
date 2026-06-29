@@ -202,6 +202,7 @@ export const PropertyDashboard: React.FC = () => {
                         >
                           <Calendar size={14} /> Cashflow
                         </button>
+
                       </div>
                     </div>
                   )}
@@ -236,7 +237,6 @@ export const PropertyDashboard: React.FC = () => {
                     <CashflowCalendar propertyId={property.id} propertyName={property.name} />
                   </div>
                 )}
-
                 <div className="grid grid-cols-1 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-gray-100 border-b border-gray-100">
                   <div className="p-6">
                     <span className="block text-xs text-gray-500 uppercase font-bold mb-1">Purchase Price</span>

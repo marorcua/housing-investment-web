@@ -14,7 +14,7 @@ test.describe('Transaction flow (Hacienda)', () => {
     await page.getByLabel('Property Name').fill('Hacienda Test Property');
     await page.getByLabel(/Purchase Price/i).fill('300000');
     await page.getByRole('button', { name: 'Save Property' }).click();
-    await expect(page.getByText('Hacienda Test Property')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Hacienda Test Property').first()).toBeVisible({ timeout: 10000 });
 
     // Add revenue — wait for form heading to disappear (mutation completed, form closed)
     await page.getByRole('button', { name: 'Revenue' }).first().click();

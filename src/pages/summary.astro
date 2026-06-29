@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SummaryApp } from '../features/summary/SummaryApp';
+---
+
+<Layout title="Monthly Summary - HousingInvest">
+	<div class="py-12">
+		<SummaryApp client:only="react" />
+	</div>
+</Layout>

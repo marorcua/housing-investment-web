@@ -13,7 +13,7 @@ test.describe('Full dashboard flow', () => {
     await page.getByLabel('Property Name').fill('Global Test Property');
     await page.getByLabel(/Purchase Price/i).fill('250000');
     await page.getByRole('button', { name: 'Save Property' }).click();
-    await expect(page.getByText('Global Test Property')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Global Test Property').first()).toBeVisible({ timeout: 10000 });
 
     // Verify the Global Overview chart is visible
     await expect(page.getByText('Global Overview')).toBeVisible({ timeout: 10000 });

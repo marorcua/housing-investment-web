@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { TopBar } from '../features/navigation/TopBar';
 
 interface Props {
 	title: string;
@@ -19,15 +20,7 @@ const { title } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body class="bg-gray-50 text-gray-900 min-h-screen">
-		<nav class="bg-white border-b border-gray-200 py-4 px-6 mb-8">
-			<div class="max-w-7xl mx-auto flex justify-between items-center">
-				<a href="/" class="text-xl font-bold text-blue-600">HousingInvest</a>
-				<div class="space-x-6">
-					<a href="/" class="hover:text-blue-600">Calculator</a>
-					<a href="/dashboard" class="hover:text-blue-600">Dashboard</a>
-				</div>
-			</div>
-		</nav>
+		<TopBar client:load />
 		<main class="max-w-7xl mx-auto px-6">
 			<slot />
 		</main>

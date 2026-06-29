@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useRecurringExpenses, useCreateRecurringExpense, useUpdateRecurringExpense, useDeleteRecurringExpense } from '../../lib/queries';
 import { formatEurosShort } from '../../lib/format';
-import { CreditCard, Calendar, DollarSign, Plus, X, Trash2, Pencil, Check } from 'lucide-react';
+import { CreditCard, Calendar, DollarSign, Percent, Plus, X, Trash2, Pencil, Check } from 'lucide-react';
 
 interface Props {
   propertyId: number;
@@ -26,34 +26,52 @@ export const RecurringExpenseManagement: React.FC<Props> = ({ propertyId, onClos
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editDraft, setEditDraft] = useState<{ name?: string; type?: 'insurance_housing' | 'insurance_life' | 'tax_ibi' | 'community' | 'other'; amount?: number; frequency?: 'monthly' | 'annual'; startDate?: string }>({});
+  const [editDraft, setEditDraft] = useState<{ name?: string; type?: 'insurance_housing' | 'insurance_life' | 'tax_ibi' | 'community' | 'other'; amount?: number; percentage?: number; usePercent?: boolean; frequency?: 'monthly' | 'annual'; startDate?: string }>({});
   const [name, setName] = useState('');
   const [type, setType] = useState<string>('other');
+  const [usePercent, setUsePercent] = useState(false);
   const [amount, setAmount] = useState<number>(0);
+  const [percentage, setPercentage] = useState<number>(0);
   const [frequency, setFrequency] = useState<'monthly' | 'annual'>('monthly');
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [error, setError] = useState('');
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || amount <= 0 || !startDate) return;
+    if (!name || !startDate) return;
+    if (!usePercent && amount <= 0) return;
+    if (usePercent && percentage <= 0) return;
     try {
-      await createExpense.mutateAsync({ propertyId, name, type: type as any, amount, frequency, startDate });
-      setName(''); setType('other'); setAmount(0); setFrequency('monthly');
-      setStartDate(new Date().toISOString().split('T')[0]); setShowAddForm(false);
+      await createExpense.mutateAsync({
+        propertyId, name, type: type as any,
+        ...(usePercent ? { percentage } : { amount }),
+        frequency, startDate,
+      });
+      setName(''); setType('other'); setUsePercent(false); setAmount(0); setPercentage(0);
+      setFrequency('monthly'); setStartDate(new Date().toISOString().split('T')[0]); setShowAddForm(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to add');
     }
   };
 
-  const startEdit = (expense: { id: number; name: string; type: 'insurance_housing' | 'insurance_life' | 'tax_ibi' | 'community' | 'other'; amount: number; frequency: 'monthly' | 'annual'; startDate: string }) => {
+  const startEdit = (expense: any) => {
+    const hasPct = !!expense.percentage;
     setEditingId(expense.id);
-    setEditDraft({ name: expense.name, type: expense.type, amount: expense.amount, frequency: expense.frequency, startDate: expense.startDate });
+    setEditDraft({
+      name: expense.name, type: expense.type,
+      amount: expense.amount, percentage: expense.percentage,
+      usePercent: hasPct,
+      frequency: expense.frequency, startDate: expense.startDate,
+    });
   };
 
   const saveEdit = async (id: number) => {
     try {
-      await updateExpense.mutateAsync({ id, data: editDraft });
+      const data: Record<string, unknown> = { ...editDraft };
+      delete data.usePercent;
+      if (editDraft.usePercent) delete data.amount;
+      else delete data.percentage;
+      await updateExpense.mutateAsync({ id, data });
       setEditingId(null); setEditDraft({});
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to save');
@@ -92,7 +110,8 @@ export const RecurringExpenseManagement: React.FC<Props> = ({ propertyId, onClos
           )}
           <div className="space-y-2">
             {(expenses || []).map(expense => {
-              const annualVal = expense.frequency === 'monthly' ? expense.amount * 12 : expense.amount;
+              const hasPct = !!expense.percentage;
+              const annualVal = hasPct ? null : (expense.frequency === 'monthly' ? expense.amount * 12 : expense.amount);
               const isEditing = editingId === expense.id;
               return (
                 <div key={expense.id} className="bg-white border border-gray-200 rounded-md p-4 shadow-xs">
@@ -100,29 +119,44 @@ export const RecurringExpenseManagement: React.FC<Props> = ({ propertyId, onClos
                     <div className="space-y-3">
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label htmlFor="edit-re-name" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Name</label>
-                          <input id="edit-re-name" className={inputCls} value={editDraft.name || ''} onChange={e => setEditDraft(d => ({ ...d, name: e.target.value }))} />
+                          <label htmlFor={`edit-re-name-${expense.id}`} className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Name</label>
+                          <input id={`edit-re-name-${expense.id}`} className={inputCls} value={editDraft.name || ''} onChange={e => setEditDraft(d => ({ ...d, name: e.target.value }))} />
                         </div>
                         <div>
-                          <label htmlFor="edit-re-type" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Type</label>
-                          <select id="edit-re-type" className={inputCls} value={editDraft.type || 'other'} onChange={e => setEditDraft(d => ({ ...d, type: e.target.value as any }))}>
+                          <label htmlFor={`edit-re-type-${expense.id}`} className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Type</label>
+                          <select id={`edit-re-type-${expense.id}`} className={inputCls} value={editDraft.type || 'other'} onChange={e => setEditDraft(d => ({ ...d, type: e.target.value as any }))}>
                             {Object.entries(expenseTypeLabels).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                           </select>
                         </div>
-                        <div>
-                          <label htmlFor="edit-re-amount" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Amount (€)</label>
-                          <input id="edit-re-amount" type="number" className={inputCls} value={editDraft.amount || ''} onChange={e => setEditDraft(d => ({ ...d, amount: Number(e.target.value) }))} />
+                        <div className="col-span-2 flex gap-3">
+                          <label className="flex items-center gap-1 text-xs text-gray-600">
+                            <input type="radio" name={`edit-re-mode-${expense.id}`} checked={!editDraft.usePercent} onChange={() => setEditDraft(d => ({ ...d, usePercent: false }))} /> Fixed
+                          </label>
+                          <label className="flex items-center gap-1 text-xs text-gray-600">
+                            <input type="radio" name={`edit-re-mode-${expense.id}`} checked={!!editDraft.usePercent} onChange={() => setEditDraft(d => ({ ...d, usePercent: true }))} /> % of Rent
+                          </label>
                         </div>
+                        {!editDraft.usePercent ? (
+                          <div className="col-span-2">
+                            <label htmlFor={`edit-re-amount-${expense.id}`} className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Amount (€)</label>
+                            <input id={`edit-re-amount-${expense.id}`} type="number" step="0.01" className={inputCls} value={editDraft.amount ?? ''} onChange={e => setEditDraft(d => ({ ...d, amount: Number(e.target.value) }))} />
+                          </div>
+                        ) : (
+                          <div className="col-span-2">
+                            <label htmlFor={`edit-re-pct-${expense.id}`} className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Percentage (%)</label>
+                            <input id={`edit-re-pct-${expense.id}`} type="number" step="0.1" className={inputCls} value={editDraft.percentage ?? ''} onChange={e => setEditDraft(d => ({ ...d, percentage: Number(e.target.value) }))} />
+                          </div>
+                        )}
                         <div>
-                          <label htmlFor="edit-re-freq" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Frequency</label>
-                          <select id="edit-re-freq" className={inputCls} value={editDraft.frequency || 'monthly'} onChange={e => setEditDraft(d => ({ ...d, frequency: e.target.value as 'monthly' | 'annual' }))}>
+                          <label htmlFor={`edit-re-freq-${expense.id}`} className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Frequency</label>
+                          <select id={`edit-re-freq-${expense.id}`} className={inputCls} value={editDraft.frequency || 'monthly'} onChange={e => setEditDraft(d => ({ ...d, frequency: e.target.value as 'monthly' | 'annual' }))}>
                             <option value="monthly">Monthly</option>
                             <option value="annual">Annual</option>
                           </select>
                         </div>
                         <div className="col-span-2">
-                          <label htmlFor="edit-re-start" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
-                          <input id="edit-re-start" type="date" className={inputCls} value={editDraft.startDate || ''} onChange={e => setEditDraft(d => ({ ...d, startDate: e.target.value }))} />
+                          <label htmlFor={`edit-re-start-${expense.id}`} className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
+                          <input id={`edit-re-start-${expense.id}`} type="date" className={inputCls} value={editDraft.startDate || ''} onChange={e => setEditDraft(d => ({ ...d, startDate: e.target.value }))} />
                         </div>
                       </div>
                       <div className="flex gap-2">
@@ -142,9 +176,14 @@ export const RecurringExpenseManagement: React.FC<Props> = ({ propertyId, onClos
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-1 text-xs text-gray-500">
                           <span className="font-semibold text-teal-800">{expenseTypeLabels[expense.type] || expense.type}</span>
-                          <span className="flex items-center gap-0.5"><DollarSign size={12} /> {formatEurosShort(expense.amount)} € / {expense.frequency}</span>
+                          {hasPct ? (
+                            <span className="flex items-center gap-0.5"><Percent size={12} /> {expense.percentage}% / {expense.frequency}</span>
+                          ) : (
+                            <span className="flex items-center gap-0.5"><DollarSign size={12} /> {formatEurosShort(expense.amount)} € / {expense.frequency}</span>
+                          )}
                           <span className="flex items-center gap-0.5"><Calendar size={12} /> {expense.startDate}</span>
-                          <span className="font-semibold text-gray-600">({formatEurosShort(annualVal)} € / yr)</span>
+                          {!hasPct && <span className="font-semibold text-gray-600">({formatEurosShort(annualVal!)} € / yr)</span>}
+                          {hasPct && <span className="font-semibold text-teal-600">% of rental income</span>}
                         </div>
                       </div>
                       <div className="flex gap-1 ml-2">
@@ -171,7 +210,7 @@ export const RecurringExpenseManagement: React.FC<Props> = ({ propertyId, onClos
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label htmlFor="add-re-name" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Name</label>
-                  <input id="add-re-name" type="text" required value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Mapfre Seguro, IBI 2026" className={inputCls} />
+                  <input id="add-re-name" type="text" required value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Management fee" className={inputCls} />
                 </div>
                 <div>
                   <label htmlFor="add-re-type" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Type</label>
@@ -179,10 +218,25 @@ export const RecurringExpenseManagement: React.FC<Props> = ({ propertyId, onClos
                     {Object.entries(expenseTypeLabels).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                   </select>
                 </div>
-                <div>
-                  <label htmlFor="add-re-amount" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Amount (€)</label>
-                  <input id="add-re-amount" type="number" required value={amount || ''} onChange={e => setAmount(Number(e.target.value))} placeholder="e.g. 50" className={inputCls} />
+                <div className="col-span-2 flex gap-4">
+                  <label className="flex items-center gap-1 text-xs text-gray-600">
+                    <input type="radio" name="add-re-mode" checked={!usePercent} onChange={() => setUsePercent(false)} /> Fixed Amount
+                  </label>
+                  <label className="flex items-center gap-1 text-xs text-gray-600">
+                    <input type="radio" name="add-re-mode" checked={usePercent} onChange={() => setUsePercent(true)} /> % of Rent
+                  </label>
                 </div>
+                {!usePercent ? (
+                  <div className="md:col-span-2">
+                    <label htmlFor="add-re-amount" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Amount (€)</label>
+                    <input id="add-re-amount" type="number" step="0.01" required={!usePercent} value={amount || ''} onChange={e => setAmount(Number(e.target.value))} placeholder="e.g. 50" className={inputCls} />
+                  </div>
+                ) : (
+                  <div className="md:col-span-2">
+                    <label htmlFor="add-re-pct" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Percentage of Monthly Rent (%)</label>
+                    <input id="add-re-pct" type="number" step="0.1" required={usePercent} value={percentage || ''} onChange={e => setPercentage(Number(e.target.value))} placeholder="e.g. 8" className={inputCls} />
+                  </div>
+                )}
                 <div>
                   <label htmlFor="add-re-freq" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Frequency</label>
                   <select id="add-re-freq" value={frequency} onChange={e => setFrequency(e.target.value as 'monthly' | 'annual')} className={inputCls}>
@@ -190,7 +244,7 @@ export const RecurringExpenseManagement: React.FC<Props> = ({ propertyId, onClos
                     <option value="annual">Annual</option>
                   </select>
                 </div>
-                <div className="md:col-span-2">
+                <div>
                   <label htmlFor="add-re-start" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
                   <input id="add-re-start" type="date" required value={startDate} onChange={e => setStartDate(e.target.value)} className={inputCls} />
                 </div>

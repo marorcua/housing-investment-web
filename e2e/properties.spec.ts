@@ -33,7 +33,7 @@ test.describe('Property management', () => {
     await page.getByLabel('Property Name').fill('E2E Test Property');
     await page.getByLabel(/Purchase Price/i).fill('200000');
     await page.getByRole('button', { name: 'Save Property' }).click();
-    await expect(page.getByText('E2E Test Property')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('E2E Test Property').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('edits a property name inline', async ({ page }) => {
@@ -41,7 +41,7 @@ test.describe('Property management', () => {
     await page.getByLabel('Property Name').fill('Editable Property');
     await page.getByLabel(/Purchase Price/i).fill('150000');
     await page.getByRole('button', { name: 'Save Property' }).click();
-    await expect(page.getByText('Editable Property')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Editable Property').first()).toBeVisible({ timeout: 10000 });
 
     const pencilButton = page.locator('button').filter({ has: page.locator('svg.lucide-pencil') }).first();
     await pencilButton.click();
@@ -51,6 +51,6 @@ test.describe('Property management', () => {
     await nameInput.fill('Edited Property');
 
     await page.getByRole('button', { name: 'Save Changes' }).click();
-    await expect(page.getByText('Edited Property')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Edited Property').first()).toBeVisible({ timeout: 10000 });
   });
 });

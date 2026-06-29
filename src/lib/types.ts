@@ -43,6 +43,7 @@ export interface Loan {
   interestRate: number;
   termYears: number;
   startDate: string;
+  actualPayment?: number;
 }
 
 export interface RecurringExpense {
@@ -51,8 +52,24 @@ export interface RecurringExpense {
   name: string;
   type: 'insurance_housing' | 'insurance_life' | 'tax_ibi' | 'community' | 'other';
   amount: number;
+  percentage?: number;
   frequency: 'monthly' | 'annual';
   startDate: string;
+}
+
+export interface MonthlySummaryRow {
+  month: number;
+  label: string;
+  earnings: number;
+  mortgageInterest: number;
+  community: number;
+  insurance: number;
+  ibi: number;
+  repairs: number;
+  otherExpenses: number;
+  subtotalExclPrincipal: number;
+  principal: number;
+  total: number;
 }
 
 export interface Summary {

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient, type QueryKey } from '@tanstack/react-query';
 import { api, isAuthenticated } from './api-client';
-import type { Property, Transaction, Tenant, RentIncrease, Loan, RecurringExpense, Summary, GlobalData, MonthData } from './types';
-import { calcMonthlyPayment } from './loan';
+import type { Property, Transaction, Tenant, RentIncrease, Loan, RecurringExpense, Summary, GlobalData, MonthData, MonthlySummaryRow } from './types';
+import { calcMonthlyPayment, calcMonthlyBreakdown } from './loan';
 
 // --- Query keys ---
 export const keys = {
@@ -141,16 +141,18 @@ function getLoanPaymentForMonth(loan: Loan, year: number, month: number): number
   const totalMonths = loan.termYears * 12;
   const elapsedMonths = (year - startYear) * 12 + (month - startMonth);
   if (elapsedMonths < 0 || elapsedMonths >= totalMonths) return null;
+  if (loan.actualPayment) return loan.actualPayment;
   return calcMonthlyPayment(loan.principal, loan.interestRate, loan.termYears);
 }
 
-function getRecurringExpenseForMonth(re: RecurringExpense, year: number, month: number): number | null {
+function getRecurringExpenseForMonth(re: RecurringExpense, year: number, month: number, monthlyRent: number): number | null {
   const start = parseLocalDate(re.startDate);
   const startYear = start.getFullYear();
   const startMonth = start.getMonth() + 1;
   if (year < startYear || (year === startYear && month < startMonth)) return null;
-  if (re.frequency === 'monthly') return re.amount;
-  if (re.frequency === 'annual' && month === startMonth) return re.amount;
+  const amount = re.percentage ? (re.percentage / 100) * monthlyRent : re.amount;
+  if (re.frequency === 'monthly') return amount;
+  if (re.frequency === 'annual' && month === startMonth) return amount;
   return null;
 }
 
@@ -178,15 +180,21 @@ export function useCashflowData(propertyId: number, year: number) {
         const revs = yearRevenues.filter(r => r.date.startsWith(mStr));
         const exps = yearExpenses.filter(e => e.date.startsWith(mStr));
 
-        const tenantRevenues: Transaction[] = allTenants
-          .filter(t => getTenantRevenueForMonth(t, year, m) > 0)
-          .map(t => ({
-            id: -(t.id),
-            propertyId,
-            amount: getTenantRevenueForMonth(t, year, m),
-            date: `${yearStr}-${String(m).padStart(2, '0')}-01`,
-            description: `Rent: ${t.name}`,
-          }));
+        const tenantRevenues: Transaction[] = [];
+        let monthlyRent = 0;
+        for (const t of allTenants) {
+          const rev = getTenantRevenueForMonth(t, year, m);
+          if (rev > 0) {
+            monthlyRent += rev;
+            tenantRevenues.push({
+              id: -(t.id),
+              propertyId,
+              amount: rev,
+              date: `${yearStr}-${String(m).padStart(2, '0')}-01`,
+              description: `Rent: ${t.name}`,
+            });
+          }
+        }
 
         const loanExpenses: Transaction[] = allLoans
           .filter(l => getLoanPaymentForMonth(l, year, m) !== null)
@@ -200,11 +208,11 @@ export function useCashflowData(propertyId: number, year: number) {
           }));
 
         const recurringExp: Transaction[] = allRecurring
-          .filter(re => getRecurringExpenseForMonth(re, year, m) !== null)
+          .filter(re => getRecurringExpenseForMonth(re, year, m, monthlyRent) !== null)
           .map(re => ({
             id: -(re.id + 2000),
             propertyId,
-            amount: getRecurringExpenseForMonth(re, year, m)!,
+            amount: getRecurringExpenseForMonth(re, year, m, monthlyRent)!,
             date: `${yearStr}-${String(m).padStart(2, '0')}-01`,
             description: re.name,
             type: 'recurring',
@@ -219,6 +227,187 @@ export function useCashflowData(propertyId: number, year: number) {
 
       return monthData;
     },
+  });
+}
+
+export function useMonthlySummary(propertyId: number, year: number) {
+  return useQuery({
+    queryKey: ['monthly-summary', propertyId, year],
+    queryFn: async () => {
+      const [allRevenues, allExpenses, allTenants, allLoans, allRecurring] = await Promise.all([
+        api.revenues.listByProperty(propertyId),
+        api.expenses.listByProperty(propertyId),
+        api.tenants.listByProperty(propertyId),
+        api.loans.listByProperty(propertyId),
+        api.recurringExpenses.listByProperty(propertyId),
+      ]);
+
+      const yearStr = year.toString();
+      const yearRevenues = allRevenues.filter(r => r.date.startsWith(yearStr));
+      const yearExpenses = allExpenses.filter(e => e.date.startsWith(yearStr));
+
+      const rows: MonthlySummaryRow[] = Array.from({ length: 12 }, (_, i) => {
+        const m = i + 1;
+        const mStr = `${yearStr}-${String(m).padStart(2, '0')}`;
+        const monthRevs = yearRevenues.filter(r => r.date.startsWith(mStr));
+        const manualRev = monthRevs.reduce((a, r) => a + r.amount, 0);
+
+        let tenantRev = 0;
+        for (const t of allTenants) {
+          tenantRev += getTenantRevenueForMonth(t, year, m);
+        }
+        const earnings = manualRev + tenantRev;
+
+        const monthExps = yearExpenses.filter(e => e.date.startsWith(mStr));
+
+        const manualCommunity = monthExps.filter(e => e.type === 'community').reduce((a, e) => a + e.amount, 0);
+        const manualInsurance = monthExps.filter(e => e.type === 'insurance').reduce((a, e) => a + e.amount, 0);
+        const manualIbi = monthExps.filter(e => e.type === 'tax').reduce((a, e) => a + e.amount, 0);
+        const manualRepairs = monthExps.filter(e => e.type === 'repair').reduce((a, e) => a + e.amount, 0);
+        const manualOther = monthExps.filter(e => !['community', 'insurance', 'tax', 'repair', 'interest'].includes(e.type!))
+          .reduce((a, e) => a + e.amount, 0);
+
+        let recurringCommunity = 0;
+        let recurringInsurance = 0;
+        let recurringIbi = 0;
+        let recurringOther = 0;
+        for (const re of allRecurring) {
+          const amt = getRecurringExpenseForMonth(re, year, m, tenantRev);
+          if (amt === null) continue;
+          if (re.type === 'community') recurringCommunity += amt;
+          else if (re.type === 'insurance_housing' || re.type === 'insurance_life') recurringInsurance += amt;
+          else if (re.type === 'tax_ibi') recurringIbi += amt;
+          else recurringOther += amt;
+        }
+
+        let mortgageInterest = 0;
+        let principal = 0;
+        for (const loan of allLoans) {
+          const start = parseLocalDate(loan.startDate);
+          const startYearL = start.getFullYear();
+          const startMonthL = start.getMonth() + 1;
+          const elapsedMonths = (year - startYearL) * 12 + (m - startMonthL);
+          const totalMonths = loan.termYears * 12;
+          if (elapsedMonths >= 0 && elapsedMonths < totalMonths) {
+            const breakdown = calcMonthlyBreakdown(loan.principal, loan.interestRate, loan.termYears, elapsedMonths, loan.actualPayment);
+            mortgageInterest += breakdown.interest;
+            principal += breakdown.principal;
+          }
+        }
+
+        const community = manualCommunity + recurringCommunity;
+        const insurance = manualInsurance + recurringInsurance;
+        const ibi = manualIbi + recurringIbi;
+        const repairs = manualRepairs;
+        const otherExpenses = manualOther + recurringOther;
+        const subtotalExclPrincipal = mortgageInterest + community + insurance + ibi + repairs + otherExpenses;
+        const total = subtotalExclPrincipal + principal;
+
+        return { month: m, label: MONTHS[i], earnings, mortgageInterest, community, insurance, ibi, repairs, otherExpenses, subtotalExclPrincipal, principal, total };
+      });
+
+      return rows;
+    },
+  });
+}
+
+export function useGlobalSummary(propertyIds: number[] | null, year: number) {
+  return useQuery({
+    queryKey: ['global-summary', propertyIds, year],
+    queryFn: async () => {
+      const ids = propertyIds;
+      if (!ids || ids.length === 0) {
+        const empty = Array.from({ length: 12 }, (_, i) => ({
+          month: i + 1, label: MONTHS[i], earnings: 0, mortgageInterest: 0, community: 0,
+          insurance: 0, ibi: 0, repairs: 0, otherExpenses: 0, subtotalExclPrincipal: 0, principal: 0, total: 0,
+        }));
+        return empty;
+      }
+      const allRows = await Promise.all(ids.map(pid => computePropertySummary(pid, year)));
+      return Array.from({ length: 12 }, (_, i) => {
+        const m = i + 1;
+        const props = ['earnings', 'mortgageInterest', 'community', 'insurance', 'ibi', 'repairs', 'otherExpenses', 'subtotalExclPrincipal', 'principal', 'total'] as const;
+        const row: any = { month: m, label: MONTHS[i] };
+        for (const p of props) {
+          row[p] = allRows.reduce((a, r) => a + (r[m - 1] as any)[p], 0);
+        }
+        return row as MonthlySummaryRow;
+      });
+    },
+  });
+}
+
+async function computePropertySummary(propertyId: number, year: number): Promise<MonthlySummaryRow[]> {
+  const [allRevenues, allExpenses, allTenants, allLoans, allRecurring] = await Promise.all([
+    api.revenues.listByProperty(propertyId),
+    api.expenses.listByProperty(propertyId),
+    api.tenants.listByProperty(propertyId),
+    api.loans.listByProperty(propertyId),
+    api.recurringExpenses.listByProperty(propertyId),
+  ]);
+
+  const yearStr = year.toString();
+  const yearRevenues = allRevenues.filter(r => r.date.startsWith(yearStr));
+  const yearExpenses = allExpenses.filter(e => e.date.startsWith(yearStr));
+
+  return Array.from({ length: 12 }, (_, i) => {
+    const m = i + 1;
+    const mStr = `${yearStr}-${String(m).padStart(2, '0')}`;
+    const monthRevs = yearRevenues.filter(r => r.date.startsWith(mStr));
+    const manualRev = monthRevs.reduce((a, r) => a + r.amount, 0);
+
+    let tenantRev = 0;
+    for (const t of allTenants) {
+      tenantRev += getTenantRevenueForMonth(t, year, m);
+    }
+    const earnings = manualRev + tenantRev;
+
+    const monthExps = yearExpenses.filter(e => e.date.startsWith(mStr));
+
+    const manualCommunity = monthExps.filter(e => e.type === 'community').reduce((a, e) => a + e.amount, 0);
+    const manualInsurance = monthExps.filter(e => e.type === 'insurance').reduce((a, e) => a + e.amount, 0);
+    const manualIbi = monthExps.filter(e => e.type === 'tax').reduce((a, e) => a + e.amount, 0);
+    const manualRepairs = monthExps.filter(e => e.type === 'repair').reduce((a, e) => a + e.amount, 0);
+    const manualOther = monthExps.filter(e => !['community', 'insurance', 'tax', 'repair', 'interest'].includes(e.type!))
+      .reduce((a, e) => a + e.amount, 0);
+
+    let recurringCommunity = 0;
+    let recurringInsurance = 0;
+    let recurringIbi = 0;
+    let recurringOther = 0;
+    for (const re of allRecurring) {
+      const amt = getRecurringExpenseForMonth(re, year, m, tenantRev);
+      if (amt === null) continue;
+      if (re.type === 'community') recurringCommunity += amt;
+      else if (re.type === 'insurance_housing' || re.type === 'insurance_life') recurringInsurance += amt;
+      else if (re.type === 'tax_ibi') recurringIbi += amt;
+      else recurringOther += amt;
+    }
+
+    let mortgageInterest = 0;
+    let principal = 0;
+    for (const loan of allLoans) {
+      const start = parseLocalDate(loan.startDate);
+      const startYearL = start.getFullYear();
+      const startMonthL = start.getMonth() + 1;
+      const elapsedMonths = (year - startYearL) * 12 + (m - startMonthL);
+      const totalMonths = loan.termYears * 12;
+      if (elapsedMonths >= 0 && elapsedMonths < totalMonths) {
+        const breakdown = calcMonthlyBreakdown(loan.principal, loan.interestRate, loan.termYears, elapsedMonths, loan.actualPayment);
+        mortgageInterest += breakdown.interest;
+        principal += breakdown.principal;
+      }
+    }
+
+    const community = manualCommunity + recurringCommunity;
+    const insurance = manualInsurance + recurringInsurance;
+    const ibi = manualIbi + recurringIbi;
+    const repairs = manualRepairs;
+    const otherExpenses = manualOther + recurringOther;
+    const subtotalExclPrincipal = mortgageInterest + community + insurance + ibi + repairs + otherExpenses;
+    const total = subtotalExclPrincipal + principal;
+
+    return { month: m, label: MONTHS[i], earnings, mortgageInterest, community, insurance, ibi, repairs, otherExpenses, subtotalExclPrincipal, principal, total };
   });
 }
 
