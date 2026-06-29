@@ -14,21 +14,25 @@ export default defineConfig({
   webServer: [
     {
       command: 'npm run db:push && npm start',
-      port: 3000,
+      port: 3001,
       cwd: apiDir,
       env: {
+        PORT: '3001',
         TURSO_CONNECTION_URL: 'file:test.db',
         API_PASSWORD: 'admin',
         JWT_SECRET: 'test-secret',
       },
       timeout: 30000,
-      reuseExistingServer: true,
+      reuseExistingServer: false,
     },
     {
       command: 'npm run dev -- --port 4321',
       port: 4321,
+      env: {
+        PUBLIC_API_URL: 'http://localhost:3001',
+      },
       timeout: 30000,
-      reuseExistingServer: true,
+      reuseExistingServer: false,
     },
   ],
 });

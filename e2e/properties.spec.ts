@@ -1,15 +1,14 @@
 import { test, expect } from '@playwright/test';
-
-const API = 'http://localhost:3000';
+import { API_URL } from './helpers';
 
 async function cleanDb() {
-  const login = await fetch(`${API}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: 'admin' }) });
+  const login = await fetch(`${API_URL}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: 'admin' }) });
   const { token } = await login.json();
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
-  const list = await fetch(`${API}/properties`, { headers });
+  const list = await fetch(`${API_URL}/properties`, { headers });
   const props = await list.json();
   for (const p of props) {
-    await fetch(`${API}/properties/${p.id}`, { method: 'DELETE', headers });
+    await fetch(`${API_URL}/properties/${p.id}`, { method: 'DELETE', headers });
   }
 }
 

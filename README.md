@@ -26,7 +26,7 @@ PUBLIC_API_URL=http://localhost:3000 npm run dev
 npm run test:e2e
 ```
 
-The Playwright config automatically starts the API server (from `../housing-investment-api` by default) using an isolated test database (`test.db`) so your real data is never touched. The test DB is re-created fresh on each run via `drizzle-kit push`.
+The Playwright config starts an isolated API on port **3001** (separate from your real API on port 3000) with its own test database (`test.db`), so your real data is never touched. The test DB is re-created fresh on each run via `drizzle-kit push`.
 
 Override the API directory path:
 
