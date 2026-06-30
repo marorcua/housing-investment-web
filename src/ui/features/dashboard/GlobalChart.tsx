@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useGlobalData } from '../../lib/queries';
-import { formatEurosShort } from '../../lib/format';
+import { useGlobalData } from '../../../application/hooks/queries';
+import { formatEurosShort } from '../../../domain/format';
 import { BarChart3, ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 
 type ViewMode = 'annual' | 'monthly';

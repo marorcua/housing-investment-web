@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useDashboardData, useUpdateProperty } from '../../lib/queries';
-import { formatEurosShort } from '../../lib/format';
-import { Home, Plus, X, Users, User, Landmark, CreditCard, Calendar, Pencil, Check, ArrowUpRight, ArrowDownRight, LogOut } from 'lucide-react';
+import { useDashboardData, useUpdateProperty, useDeleteProperty } from '../../../application/hooks/queries';
+import { formatEurosShort } from '../../../domain/format';
+import { Home, Plus, X, Users, User, Landmark, CreditCard, Calendar, Pencil, Check, ArrowUpRight, ArrowDownRight, LogOut, Trash2 } from 'lucide-react';
 import { LoginPage } from '../auth/LoginPage';
 import { AddPropertyForm } from './AddPropertyForm';
 import { AddTransactionForm } from './AddTransactionForm';
@@ -10,7 +10,7 @@ import { LoanManagement } from './LoanManagement';
 import { RecurringExpenseManagement } from './RecurringExpenseManagement';
 import { CashflowCalendar } from './CashflowCalendar';
 import { GlobalChart } from './GlobalChart';
-import { isAuthenticated, logout } from '../../lib/api-client';
+import { isAuthenticated, logout } from '../../../infrastructure/api/client';
 
 const inputCls = 'p-1.5 text-xs border border-blue-300 rounded bg-white focus:outline-none focus:ring-1 focus:ring-blue-400 w-full';
 
@@ -27,6 +27,7 @@ export const PropertyDashboard: React.FC = () => {
   const [activeCalendarId, setActiveCalendarId] = useState<number | null>(null);
   const [editingPropertyId, setEditingPropertyId] = useState<number | null>(null);
   const [editPropertyDraft, setEditPropertyDraft] = useState<{ name?: string; address?: string | null; purchasePrice?: number; purchaseDate?: string; cadastralValue?: number | null; buildingValue?: number | null }>({});
+  const deleteProperty = useDeleteProperty();
   const [error, setError] = useState('');
 
   const closeAllPanels = () => {
@@ -151,6 +152,9 @@ export const PropertyDashboard: React.FC = () => {
                           <h3 className="text-xl font-bold text-gray-900">{property.name}</h3>
                           <button onClick={() => startEditProperty(property)} className="text-gray-300 hover:text-blue-500 transition p-1">
                             <Pencil size={14} />
+                          </button>
+                          <button onClick={() => { if (window.confirm(`Delete "${property.name}" and all its data?`)) deleteProperty.mutate(property.id); }} className="text-gray-300 hover:text-red-500 transition p-1">
+                            <Trash2 size={14} />
                           </button>
                         </div>
                         <p className="text-gray-500 text-sm mb-2">{property.address}</p>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useCashflowData } from '../../lib/queries';
-import { formatEuros } from '../../lib/format';
+import { useCashflowData } from '../../../application/hooks/queries';
+import { formatEuros } from '../../../domain/format';
 import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Minus, CalendarDays, BarChart3, CreditCard } from 'lucide-react';
 import { MonthlyBarChart } from './MonthlyBarChart';
 import { RevenueEntryList } from './RevenueEntryList';

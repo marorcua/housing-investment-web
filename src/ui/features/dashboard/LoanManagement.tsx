@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useLoans, useCreateLoan, useUpdateLoan, useDeleteLoan } from '../../lib/queries';
-import { formatEurosShort } from '../../lib/format';
-import { calcMonthlyPayment } from '../../lib/loan';
+import { useLoans, useCreateLoan, useUpdateLoan, useDeleteLoan } from '../../../application/hooks/queries';
+import { formatEurosShort } from '../../../domain/format';
+import { calcMonthlyPayment } from '../../../domain/loan';
 import { Landmark, Calendar, DollarSign, Percent, Plus, X, Trash2, Pencil, Check, Banknote } from 'lucide-react';
 
 interface Props {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { api, setToken } from '../../lib/api-client';
+import { api, setToken } from '../../../infrastructure/api/client';
 
 interface Props {
   onLoggedIn: () => void;

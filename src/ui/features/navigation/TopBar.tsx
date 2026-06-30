@@ -1,5 +1,5 @@
 import React from 'react';
-import { isAuthenticated, logout } from '../../lib/api-client';
+import { isAuthenticated, logout } from '../../../infrastructure/api/client';
 
 export const TopBar: React.FC = () => {
   const loggedIn = isAuthenticated();

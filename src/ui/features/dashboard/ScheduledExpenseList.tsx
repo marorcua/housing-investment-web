@@ -1,7 +1,7 @@
 import React from 'react';
-import { formatEuros } from '../../lib/format';
+import { formatEuros } from '../../../domain/format';
 import { CreditCard, Repeat } from 'lucide-react';
-import type { Transaction } from '../../lib/types';
+import type { Transaction } from '../../../domain/types';
 
 interface Props {
   expenses: Transaction[];

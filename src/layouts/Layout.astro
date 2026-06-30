@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import { ViewTransitions } from 'astro:transitions';
-import { TopBar } from '../features/navigation/TopBar';
+import { TopBar } from '../ui/features/navigation/TopBar';
 
 interface Props {
 	title: string;
@@ -22,7 +22,7 @@ const { title } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body class="bg-gray-50 text-gray-900 min-h-screen">
-		<TopBar client:load />
+		<TopBar client:only="react" />
 		<main class="max-w-7xl mx-auto px-6">
 			<slot />
 		</main>

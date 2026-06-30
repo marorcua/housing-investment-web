@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { calcMonthlyPayment } from '../../lib/loan';
+import { calcMonthlyPayment } from '../../../domain/loan';
 
 export const InvestmentCalculator: React.FC = () => {
   const [housePrice, setHousePrice] = useState<number>(200000);

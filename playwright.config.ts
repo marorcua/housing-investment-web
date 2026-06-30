@@ -3,7 +3,7 @@ import { defineConfig } from '@playwright/test';
 const apiDir = process.env.API_DIR || '../housing-investment-api';
 
 export default defineConfig({
-  testDir: './e2e',
+  testDir: './tests/e2e',
   timeout: 30000,
   retries: 0,
   workers: 1,

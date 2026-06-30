@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useTenants, useCreateTenant, useUpdateTenant, useDeleteTenant,
-  useCreateRentIncrease, useUpdateRentIncrease, useDeleteRentIncrease } from '../../lib/queries';
+  useCreateRentIncrease, useUpdateRentIncrease, useDeleteRentIncrease } from '../../../application/hooks/queries';
 import { User, Calendar, DollarSign, Plus, X, UserX, Trash2, Pencil, Check, TrendingUp, ChevronDown, ChevronRight } from 'lucide-react';
-import type { Tenant, RentIncrease } from '../../lib/types';
+import type { Tenant, RentIncrease } from '../../../domain/types';
 
 interface Props {
   propertyId: number;

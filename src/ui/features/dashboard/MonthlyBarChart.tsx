@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { formatEurosShort } from '../../lib/format';
-import type { MonthData } from '../../lib/types';
+import { formatEurosShort } from '../../../domain/format';
+import type { MonthData } from '../../../domain/types';
 
 const BAR_CHART_W = 700;
 const BAR_CHART_H = 210;

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient, type QueryKey } from '@tanstack/react-query';
-import { api, isAuthenticated } from './api-client';
-import type { Property, Transaction, Tenant, RentIncrease, Loan, RecurringExpense, Summary, GlobalData, MonthData, MonthlySummaryRow } from './types';
-import { calcMonthlyPayment, calcMonthlyBreakdown } from './loan';
+import { api, isAuthenticated } from '../../infrastructure/api/client';
+import type { Property, Transaction, Tenant, RentIncrease, Loan, RecurringExpense, Summary, GlobalData, MonthData, MonthlySummaryRow } from '../../domain/types';
+import { calcMonthlyPayment, calcMonthlyBreakdown } from '../../domain/loan';
 
 // --- Query keys ---
 export const keys = {
@@ -438,6 +438,14 @@ export function useUpdateProperty() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<Property> }) => api.properties.update(id, data),
+    onSuccess: () => invalidateAll(qc, [['properties'], ['dashboard'], ['hacienda-global']]),
+  });
+}
+
+export function useDeleteProperty() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => api.properties.delete(id),
     onSuccess: () => invalidateAll(qc, [['properties'], ['dashboard'], ['hacienda-global']]),
   });
 }

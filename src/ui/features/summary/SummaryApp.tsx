@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { QueryProvider } from '../../lib/QueryProvider';
+import { QueryProvider } from '../../../application/providers/QueryProvider';
 import { GlobalSummary } from '../dashboard/GlobalSummary';
 import { LoginPage } from '../auth/LoginPage';
-import { isAuthenticated } from '../../lib/api-client';
+import { isAuthenticated } from '../../../infrastructure/api/client';
 
 const SummaryContent: React.FC = () => {
   const [authTick, setAuthTick] = useState(0);

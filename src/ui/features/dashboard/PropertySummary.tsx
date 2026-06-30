@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
-import { useProperties, useGlobalSummary } from '../../lib/queries';
-import { formatEuros } from '../../lib/format';
-import { ChevronLeft, ChevronRight, FileSpreadsheet, Building2 } from 'lucide-react';
+import { useMonthlySummary } from '../../../application/hooks/queries';
+import { formatEuros } from '../../../domain/format';
+import { ChevronLeft, ChevronRight, FileSpreadsheet } from 'lucide-react';
 
-const cellCls = 'p-2 text-right text-[11px] font-medium whitespace-nowrap';
-const headerCls = 'p-2 text-right text-[10px] font-bold uppercase tracking-wide';
+interface Props {
+  propertyId: number;
+  propertyName: string;
+}
 
-export const GlobalSummary: React.FC = () => {
+export const PropertySummary: React.FC<Props> = ({ propertyId, propertyName }) => {
   const currentYear = new Date().getFullYear();
   const [year, setYear] = useState(currentYear);
-  const [selectedPropId, setSelectedPropId] = useState<number | null>(null);
-  const { data: properties } = useProperties();
-  const { data: rows, isFetching } = useGlobalSummary(
-    selectedPropId ? [selectedPropId] : (properties?.map(p => p.id) ?? null),
-    year
-  );
+  const { data: rows, isFetching } = useMonthlySummary(propertyId, year);
 
   const totals = rows ? rows.reduce((a, r) => ({
     earnings: a.earnings + r.earnings,
@@ -29,36 +26,24 @@ export const GlobalSummary: React.FC = () => {
     total: a.total + r.total,
   }), { earnings: 0, mortgageInterest: 0, community: 0, insurance: 0, ibi: 0, repairs: 0, otherExpenses: 0, subtotalExclPrincipal: 0, principal: 0, total: 0 }) : null;
 
+  const cellCls = 'p-2 text-right text-[11px] font-medium whitespace-nowrap';
+  const headerCls = 'p-2 text-right text-[10px] font-bold uppercase tracking-wide';
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-2">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <FileSpreadsheet size={18} className="text-amber-600" />
-          <h3 className="text-base font-bold text-gray-800">Global Monthly Summary</h3>
+          <h3 className="text-base font-bold text-gray-800">Monthly Summary — {propertyName}</h3>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs text-gray-500">
-            <Building2 size={14} />
-            <select
-              className="border border-gray-200 rounded px-2 py-1 text-xs font-medium text-gray-700 bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
-              value={selectedPropId ?? ''}
-              onChange={e => setSelectedPropId(e.target.value ? Number(e.target.value) : null)}
-            >
-              <option value="">All Properties</option>
-              {properties?.map(p => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setYear(y => y - 1)} className="p-1.5 rounded hover:bg-gray-100 text-gray-500 transition">
-              <ChevronLeft size={16} />
-            </button>
-            <span className="text-sm font-bold text-gray-700 w-12 text-center">{year}</span>
-            <button onClick={() => setYear(y => y + 1)} className="p-1.5 rounded hover:bg-gray-100 text-gray-500 transition">
-              <ChevronRight size={16} />
-            </button>
-          </div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setYear(y => y - 1)} className="p-1.5 rounded hover:bg-gray-100 text-gray-500 transition">
+            <ChevronLeft size={16} />
+          </button>
+          <span className="text-sm font-bold text-gray-700 w-12 text-center">{year}</span>
+          <button onClick={() => setYear(y => y + 1)} className="p-1.5 rounded hover:bg-gray-100 text-gray-500 transition">
+            <ChevronRight size={16} />
+          </button>
         </div>
       </div>
 

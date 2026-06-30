@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useCreateRevenue, useCreateExpense } from '../../lib/queries';
+import { useCreateRevenue, useCreateExpense } from '../../../application/hooks/queries';
 
 interface Props {
   propertyId: number;
