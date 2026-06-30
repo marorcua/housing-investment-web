@@ -8,7 +8,7 @@ export default defineConfig({
   retries: 0,
   workers: 1,
   use: {
-    baseURL: 'http://localhost:4321',
+    baseURL: 'http://localhost:4322',
     headless: true,
     trace: 'on-first-retry',
   },
@@ -27,8 +27,8 @@ export default defineConfig({
       reuseExistingServer: false,
     },
     {
-      command: 'npm run dev -- --port 4321',
-      port: 4321,
+      command: 'npm run dev -- --port 4322',
+      port: 4322,
       env: {
         PUBLIC_API_URL: 'http://localhost:3001',
       },
