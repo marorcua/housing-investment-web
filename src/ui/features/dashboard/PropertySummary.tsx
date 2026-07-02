@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useMonthlySummary } from '../../../application/hooks/queries';
+import { useMonthlySummary } from '../../../application/hooks/summary';
 import { formatEuros } from '../../../domain/format';
 import { ChevronLeft, ChevronRight, FileSpreadsheet } from 'lucide-react';
 

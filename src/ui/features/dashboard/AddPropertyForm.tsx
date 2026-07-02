@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useCreateProperty } from '../../../application/hooks/queries';
+import { useCreateProperty } from '../../../application/hooks/properties';
 
 export const AddPropertyForm: React.FC<{ onAdded: () => void }> = ({ onAdded }) => {
   const createProperty = useCreateProperty();

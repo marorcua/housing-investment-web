@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Pencil, Trash2, X, Check } from 'lucide-react';
 import { formatEuros } from '../../../domain/format';
-import { useUpdateRevenue, useDeleteRevenue } from '../../../application/hooks/queries';
+import { useUpdateRevenue, useDeleteRevenue } from '../../../application/hooks/revenues';
 import type { Transaction } from '../../../domain/types';
 
 interface Props {

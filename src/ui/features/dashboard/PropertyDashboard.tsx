@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useDashboardData, useUpdateProperty, useDeleteProperty } from '../../../application/hooks/queries';
+import { useDashboardData } from '../../../application/hooks/dashboard';
+import { useUpdateProperty, useDeleteProperty } from '../../../application/hooks/properties';
 import { formatEurosShort } from '../../../domain/format';
 import { Home, Plus, X, Users, User, Landmark, CreditCard, Calendar, Pencil, Check, ArrowUpRight, ArrowDownRight, LogOut, Trash2 } from 'lucide-react';
 import { LoginPage } from '../auth/LoginPage';

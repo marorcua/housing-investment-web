@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useRecurringExpenses, useCreateRecurringExpense, useUpdateRecurringExpense, useDeleteRecurringExpense } from '../../../application/hooks/queries';
+import { useRecurringExpenses, useCreateRecurringExpense, useUpdateRecurringExpense, useDeleteRecurringExpense } from '../../../application/hooks/recurring-expenses';
 import { formatEurosShort } from '../../../domain/format';
 import { CreditCard, Calendar, DollarSign, Percent, Plus, X, Trash2, Pencil, Check } from 'lucide-react';
 

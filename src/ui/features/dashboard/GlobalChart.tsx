@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useGlobalData } from '../../../application/hooks/queries';
+import { useGlobalData } from '../../../application/hooks/hacienda';
 import { formatEurosShort } from '../../../domain/format';
 import { BarChart3, ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 

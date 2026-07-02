@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLoans, useCreateLoan, useUpdateLoan, useDeleteLoan } from '../../../application/hooks/queries';
+import { useLoans, useCreateLoan, useUpdateLoan, useDeleteLoan } from '../../../application/hooks/loans';
 import { formatEurosShort } from '../../../domain/format';
 import { calcMonthlyPayment } from '../../../domain/loan';
 import { Landmark, Calendar, DollarSign, Percent, Plus, X, Trash2, Pencil, Check, Banknote } from 'lucide-react';

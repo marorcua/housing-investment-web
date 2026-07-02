@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useProperties, useGlobalSummary } from '../../../application/hooks/queries';
+import { useProperties } from '../../../application/hooks/properties';
+import { useGlobalSummary } from '../../../application/hooks/summary';
 import { formatEuros } from '../../../domain/format';
 import { ChevronLeft, ChevronRight, FileSpreadsheet, Building2 } from 'lucide-react';
 
