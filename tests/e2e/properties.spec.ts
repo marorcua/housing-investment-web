@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { ROUTES, AUTH, PASSWORD, PROPERTY, TEST_VALUES, TEST_NAMES } from './constants';
 import { API_URL } from './helpers';
 
 async function cleanDb() {
-  const login = await fetch(`${API_URL}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: 'admin' }) });
+  const login = await fetch(`${API_URL}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: PASSWORD }) });
   const { token } = await login.json();
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
   const list = await fetch(`${API_URL}/properties`, { headers });
@@ -18,39 +19,39 @@ test.describe('Property management', () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('/dashboard');
-    await page.getByLabel('Password').fill('admin');
-    await page.getByRole('button', { name: 'Login' }).click();
-    await expect(page.getByText('Your Investments')).toBeVisible({ timeout: 10000 });
+    await page.goto(ROUTES.DASHBOARD);
+    await page.getByLabel(AUTH.LABEL).fill(PASSWORD);
+    await page.getByRole('button', { name: AUTH.BUTTON_LOGIN }).click();
+    await expect(page.getByText(AUTH.SUCCESS_TEXT)).toBeVisible({ timeout: 10000 });
   });
 
   test('shows empty state when no properties exist', async ({ page }) => {
-    await expect(page.getByText('No properties found')).toBeVisible();
+    await expect(page.getByText(PROPERTY.EMPTY_TEXT)).toBeVisible();
   });
 
   test('adds a new property', async ({ page }) => {
-    await page.getByRole('button', { name: 'Add Property' }).click();
-    await page.getByLabel('Property Name').fill('E2E Test Property');
-    await page.getByLabel(/Purchase Price/i).fill('200000');
-    await page.getByRole('button', { name: 'Save Property' }).click();
-    await expect(page.getByText('E2E Test Property').first()).toBeVisible({ timeout: 10000 });
+    await page.getByRole('button', { name: PROPERTY.BUTTON_ADD }).click();
+    await page.getByLabel(PROPERTY.LABEL_NAME).fill(TEST_NAMES.E2E);
+    await page.getByLabel(PROPERTY.LABEL_PRICE).fill(TEST_VALUES.PROPERTY_PRICE);
+    await page.getByRole('button', { name: PROPERTY.BUTTON_SAVE }).click();
+    await expect(page.getByText(TEST_NAMES.E2E).first()).toBeVisible({ timeout: 10000 });
   });
 
   test('edits a property name inline', async ({ page }) => {
-    await page.getByRole('button', { name: 'Add Property' }).click();
-    await page.getByLabel('Property Name').fill('Editable Property');
-    await page.getByLabel(/Purchase Price/i).fill('150000');
-    await page.getByRole('button', { name: 'Save Property' }).click();
-    await expect(page.getByText('Editable Property').first()).toBeVisible({ timeout: 10000 });
+    await page.getByRole('button', { name: PROPERTY.BUTTON_ADD }).click();
+    await page.getByLabel(PROPERTY.LABEL_NAME).fill(TEST_NAMES.EDITABLE);
+    await page.getByLabel(PROPERTY.LABEL_PRICE).fill(TEST_VALUES.PROPERTY_PRICE_LOW);
+    await page.getByRole('button', { name: PROPERTY.BUTTON_SAVE }).click();
+    await expect(page.getByText(TEST_NAMES.EDITABLE).first()).toBeVisible({ timeout: 10000 });
 
     const pencilButton = page.locator('button').filter({ has: page.locator('svg.lucide-pencil') }).first();
     await pencilButton.click();
 
-    const nameInput = page.getByLabel('Property Name');
+    const nameInput = page.getByLabel(PROPERTY.LABEL_NAME);
     await nameInput.clear();
-    await nameInput.fill('Edited Property');
+    await nameInput.fill(TEST_NAMES.EDITED);
 
-    await page.getByRole('button', { name: 'Save Changes' }).click();
-    await expect(page.getByText('Edited Property').first()).toBeVisible({ timeout: 10000 });
+    await page.getByRole('button', { name: PROPERTY.BUTTON_SAVE_CHANGES }).click();
+    await expect(page.getByText(TEST_NAMES.EDITED).first()).toBeVisible({ timeout: 10000 });
   });
 });
