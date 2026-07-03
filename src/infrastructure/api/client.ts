@@ -1,4 +1,5 @@
-import type { Property, Transaction, Tenant, RentIncrease, Loan, RecurringExpense, Summary, GlobalData } from '../../domain/types';
+import type { Property, Transaction, Loan, RecurringExpense, Summary, GlobalData } from '../../domain/types';
+import type { Tenant, RentIncrease } from '../../leases/domain/tenant';
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
 

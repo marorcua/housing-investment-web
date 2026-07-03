@@ -17,24 +17,6 @@ export interface Transaction {
   type?: string;
 }
 
-export interface RentIncrease {
-  id: number;
-  tenantId: number;
-  yearOffset: number;
-  percentage: number;
-  applied: boolean;
-}
-
-export interface Tenant {
-  id: number;
-  propertyId: number;
-  name: string;
-  startDate: string;
-  endDate: string | null;
-  monthlyRent: number;
-  rentIncreases?: RentIncrease[];
-}
-
 export interface Loan {
   id: number;
   propertyId: number;

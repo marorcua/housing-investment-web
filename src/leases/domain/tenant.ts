@@ -1,5 +1,17 @@
-import type { Tenant, RentIncrease } from './types.js';
-import { parseLocalDate } from './date.js';
+import type { RentIncrease } from './rent-increase.js';
+import { parseLocalDate } from '../../domain/date.js';
+
+export type { RentIncrease };
+
+export interface Tenant {
+  id: number;
+  propertyId: number;
+  name: string;
+  startDate: string;
+  endDate: string | null;
+  monthlyRent: number;
+  rentIncreases?: RentIncrease[];
+}
 
 export function getActiveTenant(tenants: Tenant[]): Tenant | null {
   const todayStr = new Date().toISOString().split('T')[0];

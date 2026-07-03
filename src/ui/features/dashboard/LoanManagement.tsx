@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { useLoans, useCreateLoan, useUpdateLoan, useDeleteLoan } from '../../../application/hooks/loans';
-import { formatEurosShort } from '../../../domain/format';
-import { calcMonthlyPayment } from '../../../domain/loan';
-import { Landmark, Calendar, DollarSign, Percent, Plus, X, Trash2, Pencil, Check, Banknote } from 'lucide-react';
+import { Landmark, Plus, X } from 'lucide-react';
+import { LoanCard } from './LoanCard';
+import { LoanForm } from './LoanForm';
 
 interface Props {
   propertyId: number;
   onClose: () => void;
 }
-
-const inputCls = 'w-full p-1.5 text-xs border border-indigo-300 rounded bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400';
 
 export const LoanManagement: React.FC<Props> = ({ propertyId, onClose }) => {
   const { data: loans, isLoading } = useLoans(propertyId);
@@ -96,77 +94,19 @@ export const LoanManagement: React.FC<Props> = ({ propertyId, onClose }) => {
             </div>
           )}
           <div className="space-y-2">
-            {(loans || []).map(loan => {
-              const monthly = calcMonthlyPayment(loan.principal, loan.interestRate, loan.termYears);
-              const effectiveMonthly = loan.actualPayment ?? monthly;
-              const isEditing = editingId === loan.id;
-              return (
-                <div key={loan.id} className="bg-white border border-gray-200 rounded-md p-4 shadow-xs">
-                  {isEditing ? (
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label htmlFor={`edit-loan-name-${loan.id}`} className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Name</label>
-                          <input id={`edit-loan-name-${loan.id}`} className={inputCls} value={editDraft.name || ''} onChange={e => setEditDraft(d => ({ ...d, name: e.target.value }))} />
-                        </div>
-                        <div>
-                          <label htmlFor={`edit-loan-principal-${loan.id}`} className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Principal (€)</label>
-                          <input id={`edit-loan-principal-${loan.id}`} type="number" className={inputCls} value={editDraft.principal || ''} onChange={e => setEditDraft(d => ({ ...d, principal: Number(e.target.value) }))} />
-                        </div>
-                        <div>
-                          <label htmlFor={`edit-loan-rate-${loan.id}`} className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Interest Rate (%)</label>
-                          <input id={`edit-loan-rate-${loan.id}`} type="number" step="0.01" className={inputCls} value={editDraft.interestRate ?? ''} onChange={e => setEditDraft(d => ({ ...d, interestRate: Number(e.target.value) }))} />
-                        </div>
-                        <div>
-                          <label htmlFor={`edit-loan-term-${loan.id}`} className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Term (Years)</label>
-                          <input id={`edit-loan-term-${loan.id}`} type="number" className={inputCls} value={editDraft.termYears || ''} onChange={e => setEditDraft(d => ({ ...d, termYears: Number(e.target.value) }))} />
-                        </div>
-                        <div>
-                          <label htmlFor={`edit-loan-actpay-${loan.id}`} className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Actual Payment (€) — optional</label>
-                          <input id={`edit-loan-actpay-${loan.id}`} type="number" step="0.01" className={inputCls} value={editDraft.actualPayment ?? ''} onChange={e => setEditDraft(d => ({ ...d, actualPayment: Number(e.target.value) }))} />
-                        </div>
-                        <div className="col-span-2">
-                          <label htmlFor={`edit-loan-start-${loan.id}`} className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
-                          <input id={`edit-loan-start-${loan.id}`} type="date" className={inputCls} value={editDraft.startDate || ''} onChange={e => setEditDraft(d => ({ ...d, startDate: e.target.value }))} />
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button onClick={() => saveEdit(loan.id)} className="flex items-center gap-1 px-3 py-1 rounded bg-green-600 hover:bg-green-700 text-white font-bold text-xs transition">
-                          <Check size={12} /> Save
-                        </button>
-                        <button onClick={() => { setEditingId(null); setEditDraft({}); }} className="flex items-center gap-1 px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs transition">
-                          <X size={12} /> Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex justify-between items-start">
-                      <div className="space-y-1">
-                        <div className="font-bold text-gray-800 flex items-center gap-1.5">
-                          <Landmark size={14} className="text-indigo-500" /> {loan.name}
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-1 text-xs text-gray-500">
-                          <span className="flex items-center gap-0.5"><DollarSign size={12} /> {formatEurosShort(loan.principal)} €</span>
-                          <span className="flex items-center gap-0.5"><Percent size={12} /> {loan.interestRate}%</span>
-                          <span className="flex items-center gap-0.5"><Calendar size={12} /> {loan.termYears} yrs \u00b7 {loan.startDate}</span>
-                          {loan.actualPayment ? (
-                            <span className="font-semibold text-amber-700 flex items-center gap-0.5">
-                              <Banknote size={12} /> {loan.actualPayment.toFixed(2)} €/mo <span className="font-normal text-gray-400">(bank)</span>
-                            </span>
-                          ) : (
-                            <span className="font-semibold text-indigo-700">{monthly.toFixed(2)} €/mo</span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex gap-1 ml-2">
-                        <button onClick={() => startEdit(loan)} className="p-1 text-gray-400 hover:text-indigo-600 transition"><Pencil size={14} /></button>
-                        <button onClick={() => handleDelete(loan.id)} className="p-1 text-gray-400 hover:text-red-600 transition"><Trash2 size={14} /></button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {(loans || []).map(loan => (
+              <LoanCard
+                key={loan.id}
+                loan={loan}
+                isEditing={editingId === loan.id}
+                editDraft={editDraft}
+                onEditStart={() => startEdit(loan)}
+                onEditDraftChange={setEditDraft}
+                onEditSave={() => saveEdit(loan.id)}
+                onEditCancel={() => { setEditingId(null); setEditDraft({}); }}
+                onDelete={() => handleDelete(loan.id)}
+              />
+            ))}
           </div>
           {loans && loans.length > 0 && !showAddForm && (
             <button onClick={() => setShowAddForm(true)} className="inline-flex items-center gap-1 text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3 py-1.5 rounded transition">
@@ -174,41 +114,23 @@ export const LoanManagement: React.FC<Props> = ({ propertyId, onClose }) => {
             </button>
           )}
           {showAddForm && (
-            <form onSubmit={handleAdd} className="bg-white border border-gray-200 rounded-md p-4 space-y-3">
-              <div className="flex justify-between items-center border-b border-gray-100 pb-1.5">
-                <h5 className="text-xs font-bold text-gray-700 uppercase">Add Financing / Loan</h5>
-                <button type="button" onClick={() => setShowAddForm(false)} className="text-gray-400 hover:text-gray-600"><X size={14} /></button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label htmlFor="add-loan-name" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Loan Name</label>
-                  <input id="add-loan-name" type="text" required value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Mortgage, Reform Loan" className={inputCls} />
-                </div>
-                <div>
-                  <label htmlFor="add-loan-principal" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Principal (€)</label>
-                  <input id="add-loan-principal" type="number" required value={principal || ''} onChange={e => setPrincipal(Number(e.target.value))} placeholder="e.g. 150000" className={inputCls} />
-                </div>
-                <div>
-                  <label htmlFor="add-loan-rate" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Interest Rate (%)</label>
-                  <input id="add-loan-rate" type="number" step="0.01" required value={interestRate || ''} onChange={e => setInterestRate(Number(e.target.value))} placeholder="e.g. 3.25" className={inputCls} />
-                </div>
-                <div>
-                  <label htmlFor="add-loan-term" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Term (Years)</label>
-                  <input id="add-loan-term" type="number" required value={termYears || ''} onChange={e => setTermYears(Number(e.target.value))} placeholder="e.g. 30" className={inputCls} />
-                </div>
-                <div>
-                  <label htmlFor="add-loan-actpay" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Actual Payment (€) — optional</label>
-                  <input id="add-loan-actpay" type="number" step="0.01" value={actualPayment || ''} onChange={e => setActualPayment(Number(e.target.value))} placeholder="e.g. 675.50 — bank says" className={inputCls} />
-                </div>
-                <div className="md:col-span-2">
-                  <label htmlFor="add-loan-start" className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Start Date</label>
-                  <input id="add-loan-start" type="date" required value={startDate} onChange={e => setStartDate(e.target.value)} className={inputCls} />
-                </div>
-              </div>
-              <button type="submit" disabled={createLoan.isPending} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded text-xs transition disabled:opacity-50">
-                {createLoan.isPending ? 'Saving...' : 'Register Loan'}
-              </button>
-            </form>
+            <LoanForm
+              name={name}
+              principal={principal}
+              interestRate={interestRate}
+              termYears={termYears}
+              startDate={startDate}
+              actualPayment={actualPayment}
+              onNameChange={setName}
+              onPrincipalChange={setPrincipal}
+              onRateChange={setInterestRate}
+              onTermChange={setTermYears}
+              onStartDateChange={setStartDate}
+              onActualPaymentChange={setActualPayment}
+              onSubmit={handleAdd}
+              onCancel={() => setShowAddForm(false)}
+              isPending={createLoan.isPending}
+            />
           )}
         </div>
       )}

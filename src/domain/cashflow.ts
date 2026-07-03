@@ -1,5 +1,6 @@
-import type { Transaction, Tenant, Loan, RecurringExpense, MonthData } from './types.js';
-import { getTenantRevenueForMonth } from './tenant.js';
+import type { Transaction, Loan, RecurringExpense, MonthData } from './types.js';
+import type { Tenant } from '../leases/domain/tenant.js';
+import { getTenantRevenueForMonth } from '../leases/domain/tenant.js';
 import { getLoanPaymentForMonth } from './loan.js';
 import { getRecurringExpenseForMonth } from './recurring-expense.js';
 

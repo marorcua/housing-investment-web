@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { api, isAuthenticated } from '../../infrastructure/api/client.js';
 import type { Property, Summary } from '../../domain/types.js';
-import { getActiveTenant } from '../../domain/tenant.js';
+import { getActiveTenant } from '../../leases/domain/tenant.js';
 
 export interface DashboardData {
   properties: Property[];
